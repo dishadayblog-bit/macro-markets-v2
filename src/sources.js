@@ -367,9 +367,10 @@ async function fetchAlphaVantageGlobalQuote(symbol, apiKey, opts = {}) {
   url.searchParams.set('function', 'GLOBAL_QUOTE');
   url.searchParams.set('symbol', symbol);
   url.searchParams.set('apikey', apiKey);
-  const json = await fetchJSON(url.toString(), { timeoutMs: opts.timeoutMs || 18000 });
-  if (json?.Note) throw new Error(`Alpha Vantage rate limit: ${json.Note}`);
-  if (json?.Information) throw new Error(`Alpha Vantage: ${json.Information}`);
+  try {
+    const json = await fetchJSON(url.toString(), { timeoutMs: opts.timeoutMs || 18000 });
+    if (json?.Note) throw new Error(`Alpha Vantage rate limit: ${json.Note}`);
+    if (json?.Information) throw new Error(`Alpha Vantage: ${json.Information}`);
   const q = json?.['Global Quote'] || {};
   const last = Number(q['05. price']);
   const previous = Number(q['08. previous close']);
@@ -465,13 +466,11 @@ async function tryProviderQuote(key, chain, errors) {
   if (chain.yahoo) {
     try {
       const q = await fetchYahooChart(chain.yahoo, '5d', '1d', { preferIntraday: true });
-      if (primaryErrors.length && process.env.TWELVE_DATA_API_KEY) errors.push(`Twelve Data fallback used · ${chain.label}`);
-      if (secondaryErrors.length && process.env.FINNHUB_API_KEY) errors.push(`Finnhub fallback used · ${chain.label}`);
+      // Note: fallback usage is tracked via the provider field on the quote object,
+      // not as a warning. Provider fallback is expected behavior, not an error.
       return q;
     } catch (e) {
-      if (process.env.TWELVE_DATA_API_KEY) errors.push(`Twelve Data unavailable · ${chain.label}`);
-      if (process.env.FINNHUB_API_KEY && (chain.finnhub || []).length) errors.push(`Finnhub unavailable · ${chain.label}`);
-      errors.push(`Yahoo unavailable · ${chain.label}: ${e.message}`);
+      errors.push(`All providers failed · ${chain.label}: ${e.message}`);
     }
   }
   return null;
@@ -736,10 +735,16 @@ async function fetchFREDSeries(seriesId, apiKey) {
   url.searchParams.set('file_type', 'json');
   url.searchParams.set('sort_order', 'desc');
   url.searchParams.set('limit', '2');
-  const json = await fetchJSON(url.toString());
-  const obs = (json.observations || []).filter(x => x.value && x.value !== '.');
-  if (!obs.length) throw new Error(`No FRED observation for ${seriesId}`);
-  return { value: Number(obs[0].value), date: obs[0].date, previous: obs[1] ? Number(obs[1].value) : null };
+  try {
+    const json = await fetchJSON(url.toString());
+    const obs = (json.observations || []).filter(x => x.value && x.value !== '.');
+    if (!obs.length) throw new Error(`No FRED observation for ${seriesId}`);
+    return { value: Number(obs[0].value), date: obs[0].date, previous: obs[1] ? Number(obs[1].value) : null };
+  } catch (e) {
+    // Redact the API key from any error messages that may contain the full URL
+    const safeMsg = String(e.message || e).replace(/api_key=[^&\s]+/g, 'api_key=REDACTED');
+    throw new Error(safeMsg);
+  }
 }
 
 async function fetchFRED(apiKey) {
@@ -1012,7 +1017,12 @@ function buildPayload(base, { rbi, sebi, markets, fred, worldbank, news }, now =
   payload.dataQuality = {
     liveSections: Object.entries(payload.sections).filter(([, v]) => v?.liveAvailable).map(([k]) => k),
     staleSections: Object.entries(payload.sections).filter(([, v]) => v?.liveAvailable === false).map(([k]) => k),
-    warnings: [...new Set([...(rbi?.errors || []), ...(sebi?.errors || []), ...(markets?.errors || []), ...(fred?.errors || []), ...(worldbank?.errors || []), ...(news?.errors || [])])],
+    warnings: [...new Set([...(rbi?.errors || []), ...(sebi?.errors || []), ...(markets?.errors || []), ...(fred?.errors || []), ...(worldbank?.errors || []), ...(news?.errors || [])])]
+      .map(w => String(w)
+        .replace(/api_key=[^&\s]+/g, 'api_key=REDACTED')
+        .replace(/apikey=[^&\s]+/g, 'apikey=REDACTED')
+        .replace(/token=[^&\s]+/g, 'token=REDACTED')
+      ),
   };
   payload.sources = [
     ...(rbi?.sources || []),
