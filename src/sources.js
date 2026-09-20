@@ -367,10 +367,9 @@ async function fetchAlphaVantageGlobalQuote(symbol, apiKey, opts = {}) {
   url.searchParams.set('function', 'GLOBAL_QUOTE');
   url.searchParams.set('symbol', symbol);
   url.searchParams.set('apikey', apiKey);
-  try {
-    const json = await fetchJSON(url.toString(), { timeoutMs: opts.timeoutMs || 18000 });
-    if (json?.Note) throw new Error(`Alpha Vantage rate limit: ${json.Note}`);
-    if (json?.Information) throw new Error(`Alpha Vantage: ${json.Information}`);
+  const json = await fetchJSON(url.toString(), { timeoutMs: opts.timeoutMs || 18000 });
+  if (json?.Note) throw new Error(`Alpha Vantage rate limit: ${json.Note}`);
+  if (json?.Information) throw new Error(`Alpha Vantage: ${json.Information}`);
   const q = json?.['Global Quote'] || {};
   const last = Number(q['05. price']);
   const previous = Number(q['08. previous close']);
