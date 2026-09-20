@@ -1,0 +1,13 @@
+{
+  "name": "macro-markets-intelligence",
+  "version": "2.0.1",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "node src/server.js",
+    "test": "node tests/run-tests.js"
+  },
+  "dependencies": {
+    "@vercel/kv": "^2.0.0"
+  }
+}

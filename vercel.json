@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "builds": [
+    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "^/$", "dest": "/public/index.html" },
+    { "src": "/(.+\\.(html|css|js|png|jpg|svg|ico|json))", "dest": "/public/$1" }
+  ],
+  "functions": {
+    "api/macro-data.js": { "maxDuration": 120 },
+    "api/refresh.js": { "maxDuration": 120 },
+    "api/source-status.js": { "maxDuration": 45 }
+  },
+  "crons": [
+    { "path": "/api/refresh", "schedule": "30 1 * * *" },
+    { "path": "/api/refresh", "schedule": "30 13 * * *" }
+  ]
+}

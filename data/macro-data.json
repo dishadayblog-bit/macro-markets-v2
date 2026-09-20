@@ -1,0 +1,877 @@
+{
+  "updatedAt": "2026-09-08T16:31:00+05:30",
+  "sourceStatus": "LAST VERIFIED BASELINE",
+  "sections": {
+    "dashboard": {
+      "updatedAt": "2026-09-08T16:31:00+05:30",
+      "source": "Historical baseline — verified 8 Sep 2026",
+      "globalStories": [],
+      "indiaStories": [],
+      "markets": [
+        {
+          "name": "Nifty 50",
+          "level": "23,635.10",
+          "change": "▼0.61%",
+          "asOf": "2026-09-08T15:31:00+05:30",
+          "verification": "Yahoo Finance / NSE delayed close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Sensex",
+          "level": "75,577.58",
+          "change": "▼0.73%",
+          "asOf": "2026-09-08T15:59:00+05:30",
+          "verification": "Financial Express / BSE close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "USD/INR",
+          "level": "94.84",
+          "change": "▼0.30%",
+          "asOf": "2026-09-08T17:23:00+05:30",
+          "verification": "Provisional interbank close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "US 10Y Treasury",
+          "level": "4.80%",
+          "change": "—",
+          "asOf": "2026-09-08T17:00:00+05:30",
+          "verification": "Public market report",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Brent Crude",
+          "level": "$98.35",
+          "change": "▲1.39%",
+          "asOf": "2026-09-08T17:23:00+05:30",
+          "verification": "Public market report",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        }
+      ],
+      "changes": [],
+      "liveAvailable": false
+    },
+    "global-economy": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "gdpForecasts": [
+        {
+          "economy": "United States",
+          "actual": "2.1%",
+          "previousForecast": "1.8%",
+          "latestForecast": "2.0%",
+          "revision": "▲0.2pp"
+        },
+        {
+          "economy": "China",
+          "actual": "4.7%",
+          "previousForecast": "4.8%",
+          "latestForecast": "4.6%",
+          "revision": "▼0.2pp"
+        },
+        {
+          "economy": "Eurozone",
+          "actual": "1.2%",
+          "previousForecast": "1.2%",
+          "latestForecast": "1.1%",
+          "revision": "▼0.1pp"
+        },
+        {
+          "economy": "Japan",
+          "actual": "0.9%",
+          "previousForecast": "1.0%",
+          "latestForecast": "1.0%",
+          "revision": "—"
+        },
+        {
+          "economy": "India",
+          "actual": "6.8%",
+          "previousForecast": "6.5%",
+          "latestForecast": "6.7%",
+          "revision": "▲0.2pp"
+        }
+      ],
+      "stories": [
+        {
+          "priority": "important",
+          "title": "Global growth outlook remains uneven",
+          "whatHappened": "Growth expectations differ across major economies",
+          "why": "Inflation, energy conditions and domestic demand are evolving differently",
+          "economicImpact": "Rate paths are likely to diverge",
+          "outlook": "Watch growth and inflation data for revisions"
+        }
+      ]
+    },
+    "indian-economy": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "indicators": [
+        {
+          "name": "Real GDP growth",
+          "current": "6.8% y/y",
+          "previous": "6.5% y/y",
+          "change": "▲30bps",
+          "dataStatus": "HISTORICAL",
+          "source": "MoSPI / Historical baseline"
+        },
+        {
+          "name": "CPI inflation",
+          "current": "4.2%",
+          "previous": "4.4%",
+          "change": "▼20bps",
+          "dataStatus": "HISTORICAL",
+          "source": "MoSPI / Historical baseline"
+        },
+        {
+          "name": "IIP growth",
+          "current": "5.1%",
+          "previous": "4.6%",
+          "change": "▲50bps",
+          "dataStatus": "HISTORICAL",
+          "source": "MoSPI / Historical baseline"
+        },
+        {
+          "name": "Manufacturing PMI",
+          "current": "57.4",
+          "previous": "56.9",
+          "change": "▲",
+          "dataStatus": "HISTORICAL",
+          "source": "S&P Global / Historical baseline"
+        },
+        {
+          "name": "Services PMI",
+          "current": "59.1",
+          "previous": "58.4",
+          "change": "▲",
+          "dataStatus": "HISTORICAL",
+          "source": "S&P Global / Historical baseline"
+        },
+        {
+          "name": "Forex reserves",
+          "current": "$695bn",
+          "previous": "$688bn",
+          "change": "▲$7bn",
+          "dataStatus": "HISTORICAL",
+          "source": "RBI / Historical baseline"
+        }
+      ],
+      "stories": [
+        {
+          "priority": "important",
+          "title": "India macro picture remains resilient",
+          "whatHappened": "Growth and activity indicators in this demo payload remain firm",
+          "why": "Domestic demand provides support",
+          "economicImpact": "Resilient growth gives RBI room to focus on inflation and liquidity",
+          "outlook": "Watch incoming CPI, IIP and credit data"
+        }
+      ]
+    },
+    "central-banks": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "banks": [
+        {
+          "bank": "US Federal Reserve",
+          "currentRate": "4.25–4.50%",
+          "previousRate": "4.50–4.75%",
+          "latestDecision": "Cut 25bps",
+          "expectedNextMove": "Data dependent",
+          "stance": "Dovish"
+        },
+        {
+          "bank": "RBI",
+          "currentRate": "6.00%",
+          "previousRate": "6.00%",
+          "latestDecision": "Hold",
+          "expectedNextMove": "Data dependent",
+          "stance": "Neutral"
+        },
+        {
+          "bank": "ECB",
+          "currentRate": "3.15%",
+          "previousRate": "3.15%",
+          "latestDecision": "Hold",
+          "expectedNextMove": "Data dependent",
+          "stance": "Cautious"
+        }
+      ],
+      "transmissionChain": {
+        "steps": [
+          "Central bank decision",
+          "Bond yields",
+          "Currency",
+          "Equity markets",
+          "Economy",
+          "India"
+        ],
+        "mechanism": "Changes in policy expectations transmit through yields, currencies, valuation and financial conditions."
+      }
+    },
+    "rbi-watch": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "stories": [
+        {
+          "priority": "critical",
+          "title": "RBI policy watch",
+          "whatHappened": "No new official event in this demo payload",
+          "why": "Waiting for the next policy communication",
+          "whoAffected": "Banks, NBFCs, borrowers and rate-sensitive sectors",
+          "bankingImpact": "Policy expectations affect funding costs and credit growth",
+          "marketImpact": "Banks and rate-sensitive stocks can react to changes in guidance",
+          "outlook": "Watch official RBI releases"
+        }
+      ]
+    },
+    "sebi-watch": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "stories": [
+        {
+          "priority": "important",
+          "title": "SEBI regulatory watch",
+          "whatHappened": "No new official event in this demo payload",
+          "why": "Regulatory changes can alter leverage, disclosure and market structure",
+          "investorImpact": "Rules can change trading costs and investor protections",
+          "marketImpact": "Brokers and exchanges may see earnings effects",
+          "outlook": "Watch official SEBI circulars"
+        }
+      ]
+    },
+    "global-markets": {
+      "updatedAt": "2026-09-08T20:30:00+05:30",
+      "source": "Verified public market baseline (8 Sep 2026)",
+      "equities": [
+        {
+          "name": "S&P 500",
+          "level": "7,718.60",
+          "change": "▼0.38%",
+          "quoteStatus": "LATEST CLOSE",
+          "verification": "AP / Sep 4 close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Nasdaq",
+          "level": "26,506.99",
+          "change": "▼0.29%",
+          "quoteStatus": "LATEST CLOSE",
+          "verification": "AP / Sep 4 close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Dow Jones",
+          "level": "53,414.25",
+          "change": "▼0.51%",
+          "quoteStatus": "LATEST CLOSE",
+          "verification": "AP / Sep 4 close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Nikkei 225",
+          "level": "65,269.33",
+          "change": "▼1.70%",
+          "quoteStatus": "LATEST CLOSE",
+          "verification": "Nikkei Indexes / Sep 8 close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Hang Seng",
+          "level": "25,317.18",
+          "change": "▼0.38%",
+          "quoteStatus": "LATEST CLOSE",
+          "verification": "Upstox / Sep 8 close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        }
+      ],
+      "bonds": [
+        {
+          "instrument": "US 10Y Treasury",
+          "yield": "4.779%",
+          "change": "—",
+          "quoteStatus": "INTRADAY/REFERENCE",
+          "verification": "Tradeweb/Barron's Sep 8",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "instrument": "US 2Y Treasury",
+          "yield": "4.363%",
+          "change": "—",
+          "quoteStatus": "INTRADAY/REFERENCE",
+          "verification": "Tradeweb/Barron's Sep 8",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "instrument": "Yield curve (10Y-2Y)",
+          "yield": "+0.416pp",
+          "change": "—",
+          "quoteStatus": "DERIVED",
+          "verification": "10Y minus 2Y",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        }
+      ],
+      "currencies": [
+        {
+          "pair": "DXY",
+          "level": "98.882",
+          "change": "▼0.30%",
+          "quoteStatus": "LATEST QUOTE",
+          "verification": "LSEG / Barron's Sep 8",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "pair": "EUR/USD",
+          "level": "1.1626",
+          "change": "≈0.03%",
+          "quoteStatus": "LATEST QUOTE",
+          "verification": "Investing.com Sep 8",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "pair": "USD/JPY",
+          "level": "154.13",
+          "change": "▲0.20%",
+          "quoteStatus": "LATEST QUOTE",
+          "verification": "Investing.com Sep 8",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        }
+      ],
+      "commodities": [
+        {
+          "commodity": "Brent Crude",
+          "price": "$97.70",
+          "change": "▲",
+          "quoteStatus": "LATEST QUOTE",
+          "verification": "Reuters Sep 8",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "commodity": "Gold",
+          "price": "$4,443.60/oz",
+          "change": "▼0.70%",
+          "quoteStatus": "LATEST QUOTE",
+          "verification": "Reuters gold futures Dec Sep 8",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "commodity": "Copper",
+          "price": "$6.78/lb",
+          "change": "▲2.80%",
+          "quoteStatus": "LATEST QUOTE",
+          "verification": "Barron's COMEX front-month Sep 8",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        }
+      ],
+      "liveAvailable": false
+    },
+    "indian-markets": {
+      "updatedAt": "2026-09-08T16:31:00+05:30",
+      "source": "Verified market baseline — 8 Sep 2026",
+      "assets": [
+        {
+          "name": "Nifty 50",
+          "level": "23,635.10",
+          "change": "▼0.61%",
+          "asOf": "2026-09-08T15:31:00+05:30",
+          "verification": "Yahoo Finance / NSE delayed close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Sensex",
+          "level": "75,577.58",
+          "change": "▼0.73%",
+          "asOf": "2026-09-08T15:59:00+05:30",
+          "verification": "Financial Express / BSE close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Nifty Midcap 100",
+          "level": "62,915.80",
+          "change": "▲0.21%",
+          "asOf": "2026-09-08T16:00:00+05:30",
+          "verification": "5paisa delayed close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Nifty Smallcap 100",
+          "level": "20,133.75",
+          "change": "▲0.17%",
+          "asOf": "2026-09-08T16:14:00+05:30",
+          "verification": "5paisa delayed quote",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "India 10Y G-Sec",
+          "level": "6.69%",
+          "change": "—",
+          "asOf": "2026-09-07T14:45:00+05:30",
+          "verification": "RetailBonds last available close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "USD/INR",
+          "level": "94.84",
+          "change": "▼0.30%",
+          "asOf": "2026-09-08T17:23:00+05:30",
+          "verification": "Provisional interbank close",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        }
+      ],
+      "flows": [
+        {
+          "name": "FII flow (previous trading day)",
+          "value": "+₹280.13 cr",
+          "direction": "Net buyers",
+          "asOf": "2026-09-07",
+          "verification": "Public NSE-linked report"
+        },
+        {
+          "name": "DII flow (previous trading day)",
+          "value": "+₹566.76 cr",
+          "direction": "Net buyers",
+          "asOf": "2026-09-07",
+          "verification": "Public NSE-linked report"
+        }
+      ],
+      "liveAvailable": false
+    },
+    "sector-performance": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "sectors": [
+        {
+          "sector": "Banking & Financial Services",
+          "direction": "up",
+          "change": "▲1.1%",
+          "reason": "Credit and earnings momentum",
+          "outlook": "Strong"
+        },
+        {
+          "sector": "Capital Goods",
+          "direction": "up",
+          "change": "▲0.9%",
+          "reason": "Capex cycle remains supportive",
+          "outlook": "Strong"
+        },
+        {
+          "sector": "IT",
+          "direction": "up",
+          "change": "▲0.6%",
+          "reason": "Technology demand stabilising",
+          "outlook": "Moderate"
+        },
+        {
+          "sector": "Pharma & Healthcare",
+          "direction": "up",
+          "change": "▲0.4%",
+          "reason": "Defensive demand and export support",
+          "outlook": "Moderate"
+        },
+        {
+          "sector": "Auto & EV",
+          "direction": "flat",
+          "change": "→0.0%",
+          "reason": "Mixed volume and margin signals",
+          "outlook": "Mixed"
+        },
+        {
+          "sector": "Real Estate",
+          "direction": "down",
+          "change": "▼0.5%",
+          "reason": "Valuation and cost concerns",
+          "outlook": "Watch"
+        }
+      ]
+    },
+    "top-companies": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "companies": [
+        {
+          "name": "HDFC Bank",
+          "period": "Latest demo period",
+          "revenueGrowth": "12% YoY",
+          "margin": "NIM ~3.4%",
+          "roe": "~15%",
+          "valuation": "In line",
+          "revenue": "₹XX,XXX cr",
+          "netProfit": "₹XX,XXX cr"
+        },
+        {
+          "name": "ICICI Bank",
+          "period": "Latest demo period",
+          "revenueGrowth": "14% YoY",
+          "margin": "NIM ~4.2%",
+          "roe": "~17%",
+          "valuation": "Slight premium",
+          "revenue": "₹XX,XXX cr",
+          "netProfit": "₹XX,XXX cr"
+        },
+        {
+          "name": "SBI",
+          "period": "Latest demo period",
+          "revenueGrowth": "10% YoY",
+          "margin": "NIM ~3.1%",
+          "roe": "~16%",
+          "valuation": "Discount",
+          "revenue": "₹XX,XXX cr",
+          "netProfit": "₹XX,XXX cr"
+        },
+        {
+          "name": "TCS",
+          "period": "Latest demo period",
+          "revenueGrowth": "5% YoY CC",
+          "margin": "~24%",
+          "roe": "~50%",
+          "valuation": "Premium",
+          "revenue": "₹XX,XXX cr",
+          "netProfit": "₹XX,XXX cr"
+        },
+        {
+          "name": "Infosys",
+          "period": "Latest demo period",
+          "revenueGrowth": "4% YoY CC",
+          "margin": "~21%",
+          "roe": "~30%",
+          "valuation": "In line",
+          "revenue": "₹XX,XXX cr",
+          "netProfit": "₹XX,XXX cr"
+        }
+      ]
+    },
+    "company-deep-dive": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "story": {
+        "priority": "important",
+        "title": "Live company deep-dive placeholder",
+        "whatHappened": "The backend can supply a company-specific thesis",
+        "why": "Company fundamentals connect macro, sector and valuation",
+        "economicImpact": "Demand and financing conditions affect earnings",
+        "marketImpact": "Earnings expectations drive valuation",
+        "outlook": "Replace this demo story with live company research"
+      }
+    },
+    "banking-financial": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "metrics": [
+        {
+          "segment": "Private banks",
+          "creditGrowth": "13% y/y",
+          "depositGrowth": "11% y/y",
+          "nim": "~4.0%",
+          "gnpa": "~1.3%",
+          "roa": "~1.8%"
+        },
+        {
+          "segment": "PSU banks",
+          "creditGrowth": "9% y/y",
+          "depositGrowth": "8% y/y",
+          "nim": "~3.0%",
+          "gnpa": "~2.8%",
+          "roa": "~1.0%"
+        },
+        {
+          "segment": "NBFCs",
+          "creditGrowth": "15% y/y",
+          "depositGrowth": "—",
+          "nim": "~6.5%",
+          "gnpa": "~2.5%",
+          "roa": "~2.2%"
+        }
+      ]
+    },
+    "corporate-earnings": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "earnings": [
+        {
+          "name": "TCS",
+          "revenue": "₹64,200 cr",
+          "profit": "₹12,100 cr",
+          "surprise": "Beat",
+          "commentary": "Demo earnings payload; replace with latest filing/earnings release."
+        },
+        {
+          "name": "HDFC Bank",
+          "revenue": "NII ₹31,200 cr",
+          "profit": "₹17,800 cr",
+          "surprise": "In line",
+          "commentary": "Demo earnings payload; replace with latest filing/earnings release."
+        }
+      ]
+    },
+    "commodities-energy": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "assets": [
+        {
+          "name": "Brent Crude",
+          "price": "$70.40/bbl",
+          "change": "▲0.4%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "WTI Crude",
+          "price": "$66.80/bbl",
+          "change": "▲0.2%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Gold",
+          "price": "$3,510/oz",
+          "change": "▲0.3%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Silver",
+          "price": "$40.60/oz",
+          "change": "▲0.4%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Copper",
+          "price": "$4.72/lb",
+          "change": "▲0.6%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "Natural Gas",
+          "price": "$3.05/MMBtu",
+          "change": "▼0.3%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        }
+      ]
+    },
+    "forex-capital-flows": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "assets": [
+        {
+          "name": "DXY",
+          "level": "98.8",
+          "change": "▼0.2%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "USD/INR",
+          "level": "88.06",
+          "change": "▼0.1%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "EUR/USD",
+          "level": "1.177",
+          "change": "▲0.2%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "USD/JPY",
+          "level": "146.5",
+          "change": "▼0.3%",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        },
+        {
+          "name": "USD/CNY",
+          "level": "7.10",
+          "change": "flat",
+          "dataStatus": "HISTORICAL",
+          "isLive": false
+        }
+      ],
+      "flows": [
+        {
+          "name": "FII flow (MTD)",
+          "value": "+₹8,900 cr",
+          "direction": "Net buyers"
+        },
+        {
+          "name": "DII flow (MTD)",
+          "value": "+₹15,100 cr",
+          "direction": "Net buyers"
+        }
+      ]
+    },
+    "geopolitics-markets": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "stories": [
+        {
+          "priority": "watch",
+          "title": "Geopolitical risk remains a market watch-item",
+          "whatHappened": "The backend can capture only developments with material trade, commodity or capital-flow impact",
+          "why": "Geopolitical shocks can move oil, freight, inflation and risk premia",
+          "indiaImpact": "India is most exposed through energy imports and external trade",
+          "outlook": "Watch for events that change supply routes or sanctions"
+        }
+      ]
+    },
+    "government-policy": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "stories": [
+        {
+          "priority": "important",
+          "title": "Government policy watch",
+          "whatHappened": "The backend can ingest budget, tax, PLI and industrial-policy updates",
+          "why": "Policy changes can alter capex, investment incentives and sector economics",
+          "outlook": "Populate from official government releases"
+        }
+      ]
+    },
+    "economic-calendar": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "events": [
+        {
+          "date": "Sep 2026",
+          "event": "India CPI",
+          "expected": "—",
+          "previous": "—",
+          "whyItMatters": "Inflation path influences RBI policy"
+        },
+        {
+          "date": "Sep 2026",
+          "event": "US CPI",
+          "expected": "—",
+          "previous": "—",
+          "whyItMatters": "Key input into Fed expectations"
+        },
+        {
+          "date": "Sep 2026",
+          "event": "RBI policy meeting",
+          "expected": "—",
+          "previous": "—",
+          "whyItMatters": "Sets domestic policy tone"
+        }
+      ]
+    },
+    "deep-dive": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "story": {
+        "priority": "critical",
+        "title": "Daily deep dive placeholder",
+        "whatHappened": "A scheduled backend run can generate one comprehensive story",
+        "why": "The deep dive links macro, markets, sectors and companies",
+        "keyData": "Replace with live data before deployment",
+        "economicImpact": "Depends on the day's dominant catalyst",
+        "marketImpact": "Depends on rate, earnings, commodity and risk-pricing transmission",
+        "indiaImpact": "Highlight direct India channels",
+        "outlook": "Track the next data and policy catalysts",
+        "next": "Generate this from the latest daily payload"
+      }
+    },
+    "interview-prep": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "questions": [
+        {
+          "question": "How would a Fed cut affect India?",
+          "answer": "A lower US rate path can reduce US yields, affect the dollar and global risk appetite, and potentially improve foreign capital-flow conditions for India. The effect depends on relative growth, inflation and risk sentiment.",
+          "followUp": "What could break that relationship?"
+        },
+        {
+          "question": "Why does RBI policy matter for banks?",
+          "answer": "Policy rates influence funding costs, lending rates, liquidity and ultimately net interest margins and credit growth.",
+          "followUp": "How would an RBI cut affect NIMs?"
+        }
+      ]
+    },
+    "learning-concepts": {
+      "updatedAt": "2026-09-08T07:00:00+05:30",
+      "source": "Historical baseline — verified public data 8 Sep 2026",
+      "concepts": [
+        {
+          "group": "Economics",
+          "term": "Real GDP",
+          "definition": "GDP adjusted for price changes, used to assess real output growth."
+        },
+        {
+          "group": "Markets",
+          "term": "Bond yield",
+          "definition": "The market return implied by a bond's price and cash flows."
+        },
+        {
+          "group": "Banking",
+          "term": "NIM",
+          "definition": "Net interest margin measures net interest income relative to interest-earning assets."
+        }
+      ]
+    }
+  },
+  "changes": [],
+  "refreshRun": {
+    "mode": "scheduled",
+    "startedAt": "2026-09-08T13:30:20.004Z",
+    "completedAt": "2026-09-08T13:30:30.576Z",
+    "durationMs": 10572
+  },
+  "sources": [
+    "RBI Press Releases",
+    "RBI Notifications",
+    "SEBI"
+  ],
+  "dataQuality": {
+    "liveSections": [],
+    "staleSections": [],
+    "warnings": [
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "usRealGDP: FRED_API_KEY not configured",
+      "usCPI: FRED_API_KEY not configured",
+      "usUnemployment: FRED_API_KEY not configured",
+      "usFedFunds: FRED_API_KEY not configured"
+    ]
+  }
+}

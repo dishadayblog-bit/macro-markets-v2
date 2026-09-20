@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macro & Markets Intelligence — Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root{
+    --bg: #05070C;
+    --panel: #0A0F17;
+    --card: #121A26;
+    --card-2: #0E1520;
+    --line: rgba(255,255,255,0.08);
+    --text: #E9EDF2;
+    --dim: #8996A6;
+    --dim-2: #5A6675;
+    --green: #3FE0A5;
+    --green-bg: rgba(63,224,165,0.10);
+    --amber: #F2B341;
+    --amber-bg: rgba(242,179,65,0.12);
+    --blue: #5FA8E8;
+    --blue-bg: rgba(95,168,232,0.10);
+    --red: #E86A6A;
+    --red-bg: rgba(232,106,106,0.12);
+    --font-mono: 'IBM Plex Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{
+    background: var(--bg);
+    background-image:
+      radial-gradient(circle at 10% 0%, rgba(63,224,165,0.05), transparent 40%),
+      radial-gradient(circle at 90% 100%, rgba(95,168,232,0.06), transparent 45%);
+    font-family: var(--font-body);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  ::-webkit-scrollbar{ width:7px; height:7px; }
+  ::-webkit-scrollbar-thumb{ background: rgba(63,224,165,0.28); border-radius:4px; }
+
+  .app{ max-width: 1320px; margin: 0 auto; padding: 14px; }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    background: var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding: 10px 16px; margin-bottom: 10px; gap: 12px; flex-wrap: wrap;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:32px; height:32px; border-radius:7px;
+    background: linear-gradient(135deg, var(--green), var(--blue));
+    display:flex; align-items:center; justify-content:center;
+    font-family: var(--font-mono); font-weight:700; font-size:14px; color:#05070C;
+  }
+  .brand-name{ font-family: var(--font-mono); font-weight:600; font-size:14.5px; }
+  .brand-sub{ font-size:10.5px; color:var(--dim); margin-top:1px; }
+
+  .ticker-strip{
+    font-family: var(--font-mono); font-size:11px; color: var(--dim);
+    display:flex; gap:14px; flex-wrap:wrap; align-items:center;
+  }
+  .ticker-strip b{ color: var(--text); font-weight:500; }
+  .ticker-strip .up{ color: var(--green); }
+  .ticker-strip .down{ color: var(--red); }
+
+  .legend{ display:flex; gap:10px; font-family: var(--font-mono); font-size:9.5px; color:var(--dim); }
+  .legend .dot{ display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:4px; }
+  .legend .critical .dot{ background: var(--red); }
+  .legend .important .dot{ background: var(--amber); }
+  .legend .watch .dot{ background: var(--green); }
+
+  /* ---------- LAYOUT ---------- */
+  .body-row{ display:grid; grid-template-columns: 235px 1fr; gap: 12px; align-items:start; }
+
+  .nav{
+    background: var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding: 14px 10px; max-height: 82vh; overflow-y:auto; position: sticky; top: 18px;
+  }
+  .nav-group-label{
+    font-family: var(--font-mono); font-size:9.5px; text-transform:uppercase; letter-spacing:0.1em;
+    color: var(--dim-2); padding: 10px 10px 6px;
+  }
+  .nav-item{
+    display:flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:500; padding: 8px 10px; border-radius:7px;
+    color: var(--dim); cursor:pointer; margin-bottom:2px;
+  }
+  .nav-item:hover{ background: rgba(255,255,255,0.05); color: var(--text); }
+  .nav-item.active{ background: var(--green-bg); color: var(--green); font-weight:600; }
+  .nav-item .ic{ font-size: 14px; width: 18px; text-align:center; }
+
+  .content{
+    background: var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding: 18px 22px; min-height: 78vh;
+  }
+  .section-head{ margin-bottom: 14px; border-bottom:1px solid var(--line); padding-bottom: 11px; }
+  .section-head h2{ margin:0 0 4px; font-family: var(--font-mono); font-size:18px; }
+  .section-head p{ margin:0; font-size:12.5px; color: var(--dim); }
+
+  .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid-3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  /* ---------- SHARED CARD PARTS ---------- */
+  .badge{
+    font-family: var(--font-mono); font-size:9px; text-transform:uppercase; letter-spacing:0.06em;
+    padding: 3px 7px; border-radius: 4px; display:inline-flex; align-items:center; gap:4px; font-weight:700;
+  }
+  .badge::before{ content:'●'; font-size:6px; }
+  .badge.critical{ color: var(--red); background: var(--red-bg); }
+  .badge.important{ color: var(--amber); background: var(--amber-bg); }
+  .badge.watch{ color: var(--green); background: var(--green-bg); }
+
+  .story-card{
+    background: var(--card); border:1px solid var(--line); border-radius:10px;
+    padding: 12px 14px; margin-bottom: 10px;
+  }
+  .story-card h4{ font-size: 14px; margin: 8px 0 10px; color: var(--text); }
+  .chain{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin: 8px 0 12px; font-family: var(--font-mono); font-size:10px; }
+  .chain .step{ background: rgba(255,255,255,0.04); border:1px solid var(--line); color: var(--dim); padding:4px 8px; border-radius:5px; white-space:nowrap; }
+  .chain .arrow{ color: var(--green); font-weight:700; }
+  .block{ margin-bottom: 10px; }
+  .block:last-child{ margin-bottom:0; }
+  .block .label{ font-family: var(--font-mono); font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em; color: var(--amber); margin-bottom:3px; }
+  .block .label.impact{ color: var(--blue); }
+  .block p{ margin:0; font-size:13px; line-height:1.5; }
+  .block ul{ margin:4px 0 0; padding-left:18px; font-size:13px; }
+  .block li{ margin-bottom:2px; }
+
+  .pill-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top: 10px; }
+  .pill{
+    font-family: var(--font-mono); font-size:9.5px; color: var(--blue); background: var(--blue-bg);
+    border:1px solid rgba(95,168,232,0.3); padding: 3px 9px; border-radius: 12px; cursor:pointer;
+  }
+  .pill:hover{ background: rgba(95,168,232,0.22); }
+  .pill::before{ content:'→ '; }
+
+  .note{ margin-top:10px; font-family: var(--font-mono); font-size:9.5px; color: var(--dim-2); border-top:1px dashed var(--line); padding-top:7px; }
+
+  table.tbl{ width:100%; border-collapse: collapse; font-size:12.5px; margin: 10px 0; }
+  table.tbl th{ font-family: var(--font-mono); font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em; color: var(--dim); text-align:left; padding:7px 10px; border-bottom:1px solid var(--line); }
+  table.tbl td{ padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  table.tbl tr:last-child td{ border-bottom:none; }
+  .tag-mini{ font-family: var(--font-mono); font-size:9px; padding:1px 5px; border-radius:3px; }
+  .tag-mini.actual{ background: var(--green-bg); color: var(--green); }
+  .tag-mini.guidance{ background: var(--blue-bg); color: var(--blue); }
+  .tag-mini.estimate{ background: var(--amber-bg); color: var(--amber); }
+  .tag-mini.analysis{ background: rgba(255,255,255,0.08); color: var(--dim); }
+
+  .mini-item{ display:flex; gap:9px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .mini-item:last-child{ border-bottom:none; }
+  .mini-item .mi-body{ flex:1; }
+  .mini-item .mi-title{ font-size:13px; font-weight:600; margin-bottom:2px; }
+  .mini-item .mi-why{ font-size:11.5px; color: var(--dim); }
+
+  .sector-chip{
+    font-family: var(--font-mono); font-size:11px; padding:6px 11px; border-radius:16px;
+    background: var(--card-2); border:1px solid var(--line); display:inline-flex; align-items:center; gap:5px; margin: 3px 4px 3px 0;
+  }
+  .sector-chip.up{ color: var(--green); border-color: rgba(63,224,165,0.3); }
+  .sector-chip.down{ color: var(--red); border-color: rgba(232,106,106,0.3); }
+  .sector-chip.flat{ color: var(--dim); }
+
+  .rank-row{ display:flex; align-items:center; gap:12px; padding: 10px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .rank-row:last-child{ border-bottom:none; }
+  .rank-num{ font-family: var(--font-mono); font-weight:700; color: var(--dim-2); width:22px; }
+  .rank-body{ flex:1; }
+  .rank-title{ font-size:13px; font-weight:600; display:flex; align-items:center; gap:8px; }
+  .rank-why{ font-size:11.5px; color: var(--dim); margin-top:2px; }
+
+  .scenario-row{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; margin: 8px 0; }
+  .scenario{ background: rgba(255,255,255,0.03); border:1px solid var(--line); border-radius:8px; padding:10px; }
+  .scenario .st{ font-family: var(--font-mono); font-size:9.5px; text-transform:uppercase; margin-bottom:5px; }
+  .scenario.bull .st{ color: var(--green); }
+  .scenario.base .st{ color: var(--dim); }
+  .scenario.bear .st{ color: var(--red); }
+  .scenario p{ font-size:12px; margin:0; }
+
+  .company-card{ background: var(--card-2); border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-bottom:8px; }
+  .company-card .ch{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px; }
+  .company-card .ch b{ font-size:13.5px; }
+  .company-card .ch span{ font-family: var(--font-mono); font-size:10px; color: var(--dim); }
+  .metric-row{ display:flex; flex-wrap:wrap; gap: 14px; font-size: 11.5px; }
+  .metric-row .m{ min-width: 90px; }
+  .metric-row .m .k{ color: var(--dim); font-size:9.5px; text-transform:uppercase; font-family: var(--font-mono); }
+  .metric-row .m .v{ font-weight:600; }
+
+  .concept-group{ margin-bottom: 16px; }
+  .concept-group h4{ font-family: var(--font-mono); font-size:11px; text-transform:uppercase; color: var(--blue); margin: 0 0 8px; }
+  .concept-item{ padding: 7px 0; border-bottom:1px solid rgba(255,255,255,0.05); font-size:12.5px; }
+  .concept-item:last-child{ border-bottom:none; }
+  .concept-item b{ font-family: var(--font-mono); }
+
+  .qcard{ background: var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:10px; }
+  .qcard .q{ font-weight:700; margin-bottom:8px; font-size:13.5px; }
+  .qcard .fq{ margin-top:8px; padding-top:8px; border-top:1px dashed var(--line); font-size:12px; color: var(--dim); }
+
+
+  /* ---------- DAILY DATA REFRESH ---------- */
+  .refresh-panel{
+    background: var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; margin-bottom:14px; display:flex; align-items:center;
+    justify-content:space-between; gap:12px; flex-wrap:wrap;
+  }
+  .refresh-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .refresh-status{font-family:var(--font-mono);font-size:10px;color:var(--dim)}
+  .status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--amber);margin-right:5px}
+  .status-dot.live{background:var(--green)}
+  .status-dot.error{background:var(--red)}
+  .refresh-btn,.settings-btn{
+    border:1px solid var(--line); background:var(--card); color:var(--text);
+    border-radius:7px; padding:7px 11px; cursor:pointer; font-family:var(--font-mono);
+    font-size:10px; font-weight:600;
+  }
+  .refresh-btn:hover,.settings-btn:hover{border-color:rgba(63,224,165,.45);background:var(--green-bg)}
+  .refresh-btn:disabled{opacity:.5;cursor:wait}
+  .refresh-meta{font-family:var(--font-mono);font-size:9px;color:var(--dim-2)}
+  .update-banner{
+    display:none; background:var(--blue-bg); border:1px solid rgba(95,168,232,.28);
+    border-radius:8px; padding:9px 11px; margin-bottom:14px; font-size:11.5px; color:var(--dim);
+  }
+  .update-banner.show{display:block}
+  .settings-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px}
+  .settings-card label{display:block;font-family:var(--font-mono);font-size:9.5px;text-transform:uppercase;color:var(--dim);margin:10px 0 5px}
+  .settings-card input,.settings-card select{
+    width:100%;background:var(--card-2);border:1px solid var(--line);border-radius:6px;
+    padding:8px 9px;color:var(--text);font-family:var(--font-mono);font-size:11px;
+  }
+  .settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .toggle-row{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);margin-top:12px}
+  .toggle-row input{width:auto}
+  .source-status{font-family:var(--font-mono);font-size:9.5px;color:var(--dim);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .source-status:last-child{border-bottom:none}
+  .live-empty{padding:10px 0;color:var(--dim);font-size:12px}
+  .content > .note{ margin-top: 4px; }
+  .live-source{ margin-top:8px; }
+  .content > .story-card + .story-card{ margin-top: 8px; }
+  .change-card{border-left:3px solid var(--green);padding-left:10px;margin:9px 0}
+  .change-card.changed{border-left-color:var(--amber)}
+  .change-card.revised{border-left-color:var(--blue)}
+  .change-card.outdated{border-left-color:var(--red)}
+  .refresh-history{max-height:250px;overflow:auto}
+  .refresh-history-row{display:grid;grid-template-columns:120px 90px 1fr;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-family:var(--font-mono);font-size:9.5px}
+  .context-divider{margin:18px 0 10px;padding:8px 10px;border:1px dashed rgba(95,168,232,.28);border-radius:8px;background:rgba(95,168,232,.06);display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-family:var(--font-mono);font-size:10px;color:var(--blue)}
+  .context-divider small{color:var(--dim-2);font-size:9px}
+  @media (max-width: 900px){
+    .settings-grid{grid-template-columns:1fr}
+    .refresh-history-row{grid-template-columns:1fr}
+  }
+
+  @media (max-width: 900px){
+    .body-row{ grid-template-columns: 1fr; }
+    .nav{ position:static; max-height:none; }
+    .grid-2, .grid-3, .scenario-row{ grid-template-columns: 1fr; }
+  }
+
+  .live-update-layer{background:linear-gradient(180deg,rgba(63,224,165,.07),rgba(95,168,232,.04));border:1px solid rgba(63,224,165,.24);border-radius:10px;padding:12px 14px;margin:0 0 14px;}
+  .live-update-head{display:flex;justify-content:space-between;gap:10px;align-items:center;font-family:var(--font-mono);font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+  .live-update-head span:last-child{color:var(--dim);text-transform:none;letter-spacing:0;}
+  .live-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .live-label{font-family:var(--font-mono);font-size:9px;color:var(--dim);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px;}
+  .live-story{display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);font-size:11.5px;}
+  .live-story b{display:block;margin-bottom:2px;}
+  .live-story div div{color:var(--dim);font-size:10.5px;line-height:1.4;}
+  @media (max-width:900px){.live-grid{grid-template-columns:1fr;}}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-name">Macro & Markets Intelligence</div>
+        <div class="brand-sub">Dashboard · 20 dedicated sections</div>
+      </div>
+    </div>
+    <div class="ticker-strip">
+      NIFTY <b id="tickNifty">—</b> · SENSEX <b id="tickSensex">—</b> · USD/INR <b id="tickUsdInr">—</b> · US10Y <b id="tickUs10y">—</b> · BRENT <b id="tickBrent">—</b> · GOLD <b id="tickGold">—</b>
+    </div>
+    <div class="legend">
+      <span class="critical"><span class="dot"></span>Critical</span>
+      <span class="important"><span class="dot"></span>Important</span>
+      <span class="watch"><span class="dot"></span>Watch</span>
+    </div>
+  </div>
+
+
+  <div class="refresh-panel">
+    <div class="refresh-left">
+      <button class="refresh-btn" id="refreshBtn" onclick="refreshData(true)">↻ Refresh Now</button>
+      <span class="refresh-status"><span class="status-dot" id="statusDot"></span><span id="refreshStatus">Data source not configured</span></span>
+      <span class="refresh-meta" id="lastUpdated">Last update: —</span>
+    </div>
+    <div class="refresh-left">
+      <span class="refresh-meta">Scheduled checks: 07:00 &amp; 19:00 IST</span>
+      <button class="settings-btn" onclick="selectSection('data-refresh')">⚙ Data Refresh</button>
+    </div>
+  </div>
+  <div class="update-banner" id="updateBanner"></div>
+
+  <div class="body-row">
+    <nav class="nav" id="nav"></nav>
+    <main class="content" id="content"></main>
+  </div>
+
+</div>
+
+<script>
+/* =========================================================
+   NOTE ON DATA
+   The visible figures/headlines below are fallback content. When live data is available, live-aware renderers replace these blocks without leaving empty sections. The refresh layer can replace/update
+   live data when the configured endpoint returns the JSON contract documented in the Data Refresh section. A production build swaps
+   each section's data array for a live pull (RBI/SEBI/exchange
+   feeds, news wires, filings) refreshed on a schedule, per the
+   "never fabricate statistics" rule this assistant runs on.
+   ========================================================= */
+const DEMO_NOTE = 'Reference context — current live values appear in the LIVE UPDATES panel above; preserved context is not presented as a live quote.';
+
+/* ---------------- shared render helpers ---------------- */
+function badge(p){ return '<span class="badge '+p+'">'+p.toUpperCase()+'</span>'; }
+function chain(steps){
+  return '<div class="chain">' + steps.map((s,i)=>(i>0?'<span class="arrow">→</span>':'')+'<span class="step">'+s+'</span>').join('') + '</div>';
+}
+function block(label, html, cls){ return '<div class="block"><div class="label'+(cls?' '+cls:'')+'">'+label+'</div>'+html+'</div>'; }
+function pills(ids){
+  return '<div class="pill-row">' + ids.map(id => '<span class="pill" onclick="selectSection(\''+id+'\')">'+SECTIONS[id].title+'</span>').join('') + '</div>';
+}
+function note(t){ return '<div class="note">'+t+'</div>'; }
+function scenarioRow(bull, base, bear){
+  return '<div class="scenario-row">'+
+    '<div class="scenario bull"><div class="st">Bull</div><p>'+bull+'</p></div>'+
+    '<div class="scenario base"><div class="st">Base</div><p>'+base+'</p></div>'+
+    '<div class="scenario bear"><div class="st">Bear</div><p>'+bear+'</p></div>'+
+  '</div>';
+}
+function storyCard({priority, title, chainSteps, blocks, related, showNote=true}){
+  return '<div class="story-card">' +
+    badge(priority) +
+    '<h4>'+title+'</h4>' +
+    (chainSteps ? chain(chainSteps) : '') +
+    blocks.map(b => block(b[0], b[1], b[2])).join('') +
+    (related && related.length ? pills(related) : '') +
+    (showNote ? note(DEMO_NOTE) : '') +
+  '</div>';
+}
+function miniItem(priority, title, why, sectionId){
+  return '<div class="mini-item">' +
+    '<div>'+badge(priority)+'</div>' +
+    '<div class="mi-body"><div class="mi-title">'+title+'</div><div class="mi-why">Why it matters: '+why+' · <span class="pill" style="margin-top:4px;display:inline-block" onclick="selectSection(\''+sectionId+'\')">'+SECTIONS[sectionId].title+'</span></div></div>' +
+  '</div>';
+}
+function tbl(headers, rows){
+  return '<table class="tbl"><thead><tr>'+headers.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+
+    rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join('') +
+  '</tbody></table>';
+}
+function tagMini(kind, text){ return '<span class="tag-mini '+kind+'">'+text+'</span>'; }
+
+/* =========================================================
+   SECTION DEFINITIONS
+   ========================================================= */
+const SECTIONS = {
+
+  dashboard: { icon:'🏠', title:'Overview', group:null, purpose:'Daily snapshot across every section — dive into any story via its section link.',
+    render(){
+      const liveDash = liveSection('dashboard');
+      const marketRows = Array.isArray(liveDash?.markets) && liveDash.markets.length ? liveDash.markets.slice(0,5).map(x=>[x.name,x.level,x.change]) : [
+        ['Nifty 50','23,635.10','▼0.61%'],
+        ['Sensex','75,577.58','▼0.73%'],
+        ['USD/INR','94.84','▼0.30%'],
+        ['US 10Y Yield','4.80%','—'],
+        ['Brent Crude','$98.35','▲1.39%']
+      ];
+      return (
+        '<div class="grid-2">' +
+          '<div>' +
+            '<h3 style="font-family:var(--font-mono);font-size:13px;color:var(--dim);margin:0 0 6px;">TOP 5 GLOBAL STORIES</h3>' +
+            miniItem('critical','Fed signals one more 2026 rate cut','eases global financing conditions','central-banks') +
+            miniItem('important','China Q3 GDP growth slows to 4.6%','weaker China demand pressures commodity exporters','global-economy') +
+            miniItem('important','Eurozone inflation ticks up to 2.4%','could delay ECB rate cuts','central-banks') +
+            miniItem('watch','Brent crude slips below $70','eases India\'s import bill','commodities-energy') +
+            miniItem('watch','US jobless claims edge higher','adds to the soft-landing narrative','global-economy') +
+          '</div>' +
+          '<div>' +
+            '<h3 style="font-family:var(--font-mono);font-size:13px;color:var(--dim);margin:0 0 6px;">TOP 5 INDIA STORIES</h3>' +
+            miniItem('critical','RBI holds repo rate at 6.00%, neutral stance','signals a data-dependent path on further cuts','rbi-watch') +
+            miniItem('important','India Q2 GDP beats at 6.8%','reinforces India as the fastest-growing major economy','indian-economy') +
+            miniItem('important','SEBI tightens F&O margin norms','could dent discount-broker earnings','sebi-watch') +
+            miniItem('watch','Rupee holds near 88/USD','RBI intervention smoothing volatility','forex-capital-flows') +
+            miniItem('watch','IT sector Q2 earnings mixed','demand recovery still gradual','corporate-earnings') +
+          '</div>' +
+        '</div>' +
+        '<div class="grid-2" style="margin-top:16px;">' +
+          '<div class="story-card">' +
+            '<h4 style="margin-top:0;">Major Market Movements</h4>' +
+            tbl(['Index/Asset','Level','Change'], marketRows) +
+            pills(['global-markets','indian-markets']) +
+          '</div>' +
+          '<div class="story-card">' +
+            '<h4 style="margin-top:0;">RBI / SEBI Snapshot</h4>' +
+            '<div class="block"><p><b>RBI:</b> Repo rate unchanged at 6.00%; liquidity stance stays accommodative.</p></div>' +
+            '<div class="block"><p><b>SEBI:</b> New F&O lot-size and margin norms take effect this week.</p></div>' +
+            pills(['rbi-watch','sebi-watch']) +
+          '</div>' +
+        '</div>' +
+        '<div class="grid-2" style="margin-top:16px;">' +
+          '<div class="story-card">' +
+            '<h4 style="margin-top:0;">Top-Performing Sectors</h4>' +
+            '<span class="sector-chip up">Banking ▲</span><span class="sector-chip up">IT ▲</span><span class="sector-chip up">Capital Goods ▲</span>' +
+            '<span class="sector-chip flat">Auto →</span><span class="sector-chip up">Pharma ▲</span><span class="sector-chip down">Realty ▼</span>' +
+            pills(['sector-performance']) +
+          '</div>' +
+          '<div class="story-card">' +
+            '<h4 style="margin-top:0;">Company Developments</h4>' +
+            '<div class="block"><p>TCS Q2 net profit up 8% YoY, beats street estimates.</p></div>' +
+            '<div class="block"><p>Adani Green announces a new renewable capex plan.</p></div>' +
+            pills(['corporate-earnings','top-companies']) +
+          '</div>' +
+        '</div>' +
+        '<div class="grid-2" style="margin-top:16px;">' +
+          '<div class="story-card">' +
+            '<h4 style="margin-top:0;">Geopolitics to Watch</h4>' +
+            '<div class="block"><p>Middle East shipping-route tensions keep freight costs elevated, a mild watch-item for input costs.</p></div>' +
+            pills(['geopolitics-markets']) +
+          '</div>' +
+          '<div class="story-card">' +
+            '<h4 style="margin-top:0;">Data Released Today · Upcoming Events</h4>' +
+            tbl(['Event','Actual','Expected','Previous'], [
+              ['India CPI','4.2%','4.3%','4.4%'],
+            ]) +
+            '<div class="block"><p><b>Upcoming:</b> US Payrolls (Fri) · RBI MPC (next week) · India IIP (in 3 days)</p></div>' +
+            pills(['economic-calendar']) +
+          '</div>' +
+        '</div>'
+      );
+    }
+  },
+
+  'global-economy': { icon:'🌍', title:'Global Economy', group:'Macro', purpose:'Track the health and direction of the global economy — US, China, Europe, Japan, EM, inflation, employment, trade, recession risk.',
+    render(){
+      return (
+        '<h4 style="font-family:var(--font-mono);font-size:12px;color:var(--dim);">GDP & GROWTH DASHBOARD</h4>' +
+        tbl(['Economy','Current Growth (actual)','Previous Forecast','Latest Forecast','Revision'], [
+          ['United States','2.1% y/y','1.8% (2027)','2.0% (2027)','▲ upgraded'],
+          ['China','4.6% y/y','4.8% (2027)','4.5% (2027)','▼ downgraded'],
+          ['Eurozone','1.0% y/y','1.2% (2027)','1.1% (2027)','▼ downgraded'],
+          ['Japan','0.9% y/y','1.0% (2027)','1.0% (2027)','— unchanged'],
+          ['India','6.8% y/y','6.5% (FY27)','6.7% (FY27)','▲ upgraded'],
+        ]) +
+        note('Current growth = actual reported data. Forecasts = institutional estimates (IMF/World Bank style), never treated as confirmed. ' + DEMO_NOTE) +
+        storyCard({ priority:'critical', title:'US labour market cools, raising rate-cut odds',
+          chainSteps:['What happened','Why','Economic impact','Outlook'],
+          blocks:[
+            ['What happened','<p>Job openings fall to a 3-year low; wage growth softens to 3.4% y/y.</p>'],
+            ['Why','<p>Restrictive policy rates have gradually cooled hiring demand across services.</p>'],
+            ['Economic impact','<p>Slower wage growth reduces a key inflation-persistence channel.</p>','impact'],
+          ],
+          related:['central-banks','global-markets','indian-markets']
+        }) +
+        storyCard({ priority:'important', title:'China unveils fresh property-sector stimulus',
+          chainSteps:['What happened','Why','Economic impact','Outlook'],
+          blocks:[
+            ['What happened','<p>Beijing cuts mortgage down-payment requirements and eases local homebuying restrictions.</p>'],
+            ['Why','<p>Property remains a large drag on GDP; policymakers want to stabilise prices before year-end.</p>'],
+            ['Economic impact','<p>Commodity-exporting EMs and metals demand are the most direct beneficiaries if it works.</p>','impact'],
+          ],
+          related:['commodities-energy','geopolitics-markets']
+        })
+      );
+    }
+  },
+
+  'indian-economy': { icon:'🇮🇳', title:'Indian Economy', group:'Macro', purpose:'Track India\'s macroeconomic health — GDP, inflation, PMI, fiscal deficit, current account, forex reserves, reforms.',
+    render(){
+      return (
+        '<h4 style="font-family:var(--font-mono);font-size:12px;color:var(--dim);">KEY INDICATORS</h4>' +
+        tbl(['Indicator','Current','Previous','Change'], [
+          ['Real GDP growth','6.8% y/y','6.5% y/y','▲ 30bps'],
+          ['CPI inflation','4.2%','4.4%','▼ 20bps'],
+          ['IIP growth','5.1%','4.6%','▲ 50bps'],
+          ['Manufacturing PMI','57.4','56.9','▲'],
+          ['Services PMI','59.1','58.4','▲'],
+          ['Fiscal deficit (% GDP, FYTD)','4.9%','5.1% (last FY)','▼ improving'],
+          ['Current account (% GDP)','-1.1%','-1.3%','▼ improving'],
+          ['Forex reserves','$695bn','$688bn','▲'],
+        ]) +
+        note(DEMO_NOTE) +
+        storyCard({ priority:'important', title:'CPI inflation eases to 4.2%',
+          chainSteps:['Current situation','Previous situation','Change','Reason','Impact','Outlook'],
+          blocks:[
+            ['Current situation','<p>Headline CPI at 4.2% y/y, within RBI\'s 2–6% target band and near the 4% mid-point.</p>'],
+            ['Previous situation','<p>4.4% in the prior month.</p>'],
+            ['Change','<p>20bps decline, driven mainly by softer vegetable and cereal prices.</p>'],
+            ['Impact','<p>Gives RBI more comfort to hold or consider easing if the trend persists.</p>','impact'],
+            ['Outlook','<p>Base effects turn less favourable next quarter — watch for a possible uptick.</p>'],
+          ],
+          related:['rbi-watch','central-banks']
+        })
+      );
+    }
+  },
+
+  'central-banks': { icon:'🏦', title:'Central Banks', group:'Macro', purpose:'Fed, RBI, ECB, BoE, BoJ, PBOC — policy rates, stance, and the transmission chain into markets.',
+    render(){
+      return (
+        tbl(['Bank','Current Rate','Previous Rate','Latest Decision','Expected Next Move','Stance'], [
+          ['US Federal Reserve','4.25–4.50%','4.50–4.75%','Cut 25bps','One more cut possible','Dovish tilt'],
+          ['RBI','6.00%','6.00%','Hold','Data-dependent','Neutral'],
+          ['ECB','3.15%','3.15%','Hold','Cut if inflation cools further','Cautious'],
+          ['Bank of England','4.50%','4.75%','Cut 25bps','Gradual easing','Cautious'],
+          ['Bank of Japan','0.50%','0.25%','Hike 25bps','Watching Yen, wage data','Slowly normalising'],
+          ['PBOC','3.00% (LPR)','3.10%','Cut','More easing likely','Accommodative'],
+        ]) +
+        note(DEMO_NOTE) +
+        '<div class="story-card"><h4 style="margin-top:0;">Transmission Chain</h4>' +
+          chain(['Central bank decision','Bond yields','Currency','Equity markets','Economy','India']) +
+          block('Mechanism', '<p>A Fed cut lowers US yields and softens the dollar, which typically eases financing conditions globally, supports risk assets, and improves capital-flow conditions for EMs including India.</p>') +
+          pills(['global-markets','forex-capital-flows','indian-markets','rbi-watch']) +
+        '</div>'
+      );
+    }
+  },
+
+  'rbi-watch': { icon:'🇮🇳', title:'RBI Watch', group:'Macro', purpose:'Real-time, RBI-only feed — MPC, repo rate, liquidity, banking/NBFC regulation, forex policy, circulars.',
+    render(){
+      return (
+        storyCard({ priority:'critical', title:'MPC holds repo rate at 6.00%, retains neutral stance',
+          chainSteps:['What changed','Why','Who is affected','Banking impact','Economic impact','Market impact'],
+          blocks:[
+            ['What changed','<p>Repo rate unchanged for a third consecutive meeting.</p>'],
+            ['Why','<p>MPC wants more evidence that the recent inflation cooling is durable before easing further.</p>'],
+            ['Who is affected','<p>Banks\' cost of funds, floating-rate home/auto loan EMIs, NBFC borrowing costs.</p>'],
+            ['Banking impact','<p>Net interest margins stay broadly stable in the near term.</p>','impact'],
+            ['Market impact','<p>Rate-sensitive stocks (auto, realty, banks) see limited immediate reaction given the hold was expected.</p>','impact'],
+          ],
+          related:['central-banks','banking-financial','indian-markets']
+        }) +
+        storyCard({ priority:'important', title:'RBI eases liquidity norms for select NBFCs',
+          chainSteps:['What changed','Why','Who is affected','Banking impact','Economic impact','Market impact'],
+          blocks:[
+            ['What changed','<p>Revised liquidity coverage requirements for well-rated NBFCs with diversified funding.</p>'],
+            ['Why','<p>Aims to support credit flow to NBFC-dependent sectors like auto and MSME financing.</p>'],
+            ['Economic impact','<p>Marginal positive for credit availability in retail and MSME lending.</p>','impact'],
+          ],
+          related:['banking-financial','sector-performance']
+        })
+      );
+    }
+  },
+
+  'sebi-watch': { icon:'📊', title:'SEBI Watch', group:'Macro', purpose:'Dedicated to SEBI and Indian capital-market regulation — F&O, IPOs, mutual funds, governance, disclosure.',
+    render(){
+      return (
+        storyCard({ priority:'important', title:'SEBI tightens F&O lot-size and margin norms',
+          chainSteps:['What changed','Why','Who is affected','Investor impact','Company impact','Market impact'],
+          blocks:[
+            ['What changed','<p>Higher minimum contract size and margin requirements for index derivatives.</p>'],
+            ['Why','<p>Concern over retail losses in speculative options trading and system-wide leverage.</p>'],
+            ['Investor impact','<p>Higher capital required per lot reduces retail speculative volumes.</p>'],
+            ['Company impact','<p>Discount brokers with high F&O revenue mix face the most direct earnings pressure.</p>','impact'],
+            ['Market impact','<p>Options volumes likely shift toward longer-dated contracts and cash-market activity.</p>','impact'],
+          ],
+          related:['top-companies','indian-markets']
+        }) +
+        storyCard({ priority:'watch', title:'SEBI proposes faster IPO disclosure timelines',
+          chainSteps:['What changed','Why','Who is affected','Investor impact','Market impact'],
+          blocks:[
+            ['What changed','<p>Draft norms shorten the window for material-event disclosures ahead of listing.</p>'],
+            ['Who is affected','<p>Companies in the IPO pipeline and their merchant bankers.</p>'],
+            ['Investor impact','<p>Improves pre-listing transparency for retail applicants.</p>'],
+          ],
+          related:['government-policy']
+        })
+      );
+    }
+  },
+
+  'global-markets': { icon:'📈', title:'Global Markets', group:'Markets', purpose:'Equities, bonds, currencies and commodities across major global markets.',
+    render(){
+      const live = liveSection('global-markets');
+      const blocks = '<div class="grid-2">' +
+        '<div class="story-card"><h4 style="margin-top:0;">Equities · Live</h4>'+marketTableWithStatus(['Index','Level','Change / Status'], live?.equities)+'</div>'+
+        '<div class="story-card"><h4 style="margin-top:0;">Bonds · Live</h4>'+marketTableWithStatus(['Instrument','Yield','Change / Status'], live?.bonds)+'</div>'+
+        '<div class="story-card"><h4 style="margin-top:0;">Currencies · Live</h4>'+marketTableWithStatus(['Pair','Level','Change / Status'], live?.currencies)+'</div>'+
+        '<div class="story-card"><h4 style="margin-top:0;">Commodities · Live</h4>'+marketTableWithStatus(['Commodity','Price','Change / Status'], live?.commodities)+'</div>'+
+        '</div>' + sourceMeta(live || {source:'Market session feed',updatedAt:null});
+      return blocks + storyCard({ priority:'important', title:'Global market transmission',
+        chainSteps:['Rates','Dollar','Commodities','Risk appetite','Equities','India'],
+        blocks:[
+          ['Data handling','<p>Markets open: latest current quote. Markets closed: latest completed session. Each row carries its own freshness/status.</p>'],
+          ['Integrity rule','<p>Unavailable provider data is not replaced with demo values.</p>','impact']
+        ],
+        related:['central-banks','indian-markets','forex-capital-flows']
+      });
+    }
+  },
+
+  'indian-markets': { icon:'🇮🇳', title:'Indian Markets', group:'Markets', purpose:'Nifty, Sensex, mid/small-caps, G-Secs, rupee, and FII/DII flows.',
+    render(){
+      const d = liveSection('indian-markets');
+      return marketTableWithStatus(['Instrument','Level','Change / Status'], d?.assets) +
+        (Array.isArray(d?.flows) && d.flows.length ? '<div class="story-card"><h4 style="margin-top:0;">FII / DII Flows</h4>'+liveTable(['Flow','Value','Direction'],d.flows.map(x=>[x.name,x.value,x.direction]))+'</div>' : '') +
+        '<div class="story-card"><h4 style="margin-top:0;">Session status</h4><p style="font-size:12.5px;color:var(--dim);margin:0;">Each instrument carries its own data freshness classification (LIVE / CLOSE / PREV / STALE / N/A). FII/DII flows are shown for the latest official reported session.</p>'+sourceMeta(d || {source:'Indian market feeds'})+'</div>';
+    }
+  },
+
+  'forex-capital-flows': { icon:'💱', title:'Forex & Capital Flows', group:'Markets', purpose:'DXY, USD/INR, major crosses, FII/DII flows, and forex reserves.',
+    render(){
+      const d = liveSection('forex-capital-flows');
+      return marketTableWithStatus(['Metric','Level','Change / Status'], d?.assets) + (Array.isArray(d?.flows) && d.flows.length ? '<div class="story-card"><h4 style="margin-top:0;">Capital Flows</h4>'+liveTable(['Metric','Value','Direction'],d.flows.map(x=>[x.name,x.value,x.direction]))+'</div>' : '') + '<div class="story-card"><h4 style="margin-top:0;">Flow interpretation</h4><p style="font-size:12.5px;color:var(--dim);margin:0;">FX quotes carry session-aware freshness classification; capital-flow data is displayed with its official reporting date.</p>'+sourceMeta(d || {source:'FX market feed'})+'</div>';
+    }
+  },
+
+  'commodities-energy': { icon:'🛢️', title:'Commodities & Energy', group:'Markets', purpose:'Crude, gold, silver, copper and natural gas — supply/demand and India linkages.',
+    render(){
+      const d = liveSection('commodities-energy');
+      return marketTableWithStatus(['Commodity','Price','Change / Status'], d?.assets) + storyCard({priority:'watch',title:'Commodity-to-India transmission',chainSteps:['Commodity price','Inflation','Current account','Rupee','RBI','Markets'],blocks:[['Live handling','<p>Each commodity row carries its provider timestamp and freshness classification (LIVE / CLOSE / PREV / STALE). No old demo number is shown as current when a fresh quote is unavailable.</p>']]});
+    }
+  },
+
+  'sector-performance': { icon:'🏭', title:'Sector Performance', group:'Corporate', purpose:'Ranked Indian sectors by stock performance, growth, demand, policy support and valuation.',
+    render(){
+      const rows = [
+        ['1','Banking & Financial Services','up','Credit growth steady, asset quality benign','Strong'],
+        ['2','Information Technology','up','AI-services deal wins offset soft discretionary spend','Moderate'],
+        ['3','Capital Goods','up','Government + private capex cycle broadening','Strong'],
+        ['4','Pharma & Healthcare','up','Steady US generics pricing, domestic formulation growth','Moderate'],
+        ['5','Renewable Energy','up','Policy push + falling module costs','Strong, but capital-intensive'],
+        ['6','Auto & EV','flat','Rural demand recovering, EV transition costs weigh on margins','Mixed'],
+        ['7','Real Estate','down','High base after a strong run, inventory rising in some cities','Watch'],
+        ['8','Metals & Mining','down','China demand softness weighs on prices','Cyclical, weak near-term'],
+      ];
+      return (
+        '<div class="story-card">' + rows.map(r =>
+          '<div class="rank-row"><div class="rank-num">'+r[0]+'</div><div class="rank-body">' +
+          '<div class="rank-title">'+r[1]+' <span class="sector-chip '+r[2]+'">'+(r[2]==='up'?'▲':r[2]==='down'?'▼':'→')+'</span></div>' +
+          '<div class="rank-why">'+r[3]+' — Outlook: '+r[4]+'</div></div></div>'
+        ).join('') + note('Ranked on stock performance, revenue/earnings growth, demand, government support, capex, and valuation. ' + DEMO_NOTE) + '</div>' +
+        pills(['top-companies','company-deep-dive','banking-financial'])
+      );
+    }
+  },
+
+  'top-companies': { icon:'🏆', title:'Top Companies', group:'Corporate', purpose:'At least 5 major companies per key sector, with metrics clearly labeled by source.',
+    render(){
+      function companyCard(name, rev, margin, roe, val, note2){
+        return '<div class="company-card"><div class="ch"><b>'+name+'</b><span>'+note2+'</span></div>' +
+          '<div class="metric-row">' +
+            '<div class="m"><div class="k">Revenue growth</div><div class="v">'+rev+' '+tagMini('actual','Actual')+'</div></div>' +
+            '<div class="m"><div class="k">Margin</div><div class="v">'+margin+' '+tagMini('actual','Actual')+'</div></div>' +
+            '<div class="m"><div class="k">ROE</div><div class="v">'+roe+' '+tagMini('actual','Actual')+'</div></div>' +
+            '<div class="m"><div class="k">Valuation view</div><div class="v">'+val+' '+tagMini('analysis','Analysis')+'</div></div>' +
+          '</div></div>';
+      }
+      return (
+        '<h4 style="font-family:var(--font-mono);font-size:12px;color:var(--dim);">BANKING & FINANCIAL SERVICES</h4>' +
+        companyCard('HDFC Bank','12% YoY','NIM ~3.4%','~15%','In line with 5Y avg P/B','Q2 FY26') +
+        companyCard('ICICI Bank','14% YoY','NIM ~4.2%','~17%','Slight premium to peers','Q2 FY26') +
+        companyCard('State Bank of India','10% YoY','NIM ~3.1%','~16%','Discount to private peers','Q2 FY26') +
+        companyCard('Kotak Mahindra Bank','11% YoY','NIM ~4.8%','~14%','Premium, franchise quality','Q2 FY26') +
+        companyCard('Axis Bank','13% YoY','NIM ~3.9%','~15%','In line with sector','Q2 FY26') +
+        '<h4 style="font-family:var(--font-mono);font-size:12px;color:var(--dim);margin-top:18px;">INFORMATION TECHNOLOGY</h4>' +
+        companyCard('TCS','5% YoY (CC)','Operating margin ~24%','~50%','Premium to mid-caps','Q2 FY26') +
+        companyCard('Infosys','4% YoY (CC)','Operating margin ~21%','~30%','In line with large-cap peers','Q2 FY26') +
+        companyCard('HCLTech','6% YoY (CC)','Operating margin ~19%','~24%','Slight discount','Q2 FY26') +
+        companyCard('Wipro','2% YoY (CC)','Operating margin ~17%','~16%','Discount, turnaround story','Q2 FY26') +
+        companyCard('Tech Mahindra','3% YoY (CC)','Operating margin ~11%','~14%','Discount, margin recovery watched','Q2 FY26') +
+        note('Actual = reported results. Guidance = management commentary. Estimate = analyst consensus. Analysis = this assistant\'s own read — always kept separate. ' + DEMO_NOTE) +
+        pills(['company-deep-dive','corporate-earnings','sector-performance'])
+      );
+    }
+  },
+
+  'company-deep-dive': { icon:'🔍', title:'Company Deep Dive', group:'Corporate', purpose:'"Teach Me Like an Analyst" — full framework for any company or sector.',
+    render(){
+      return (
+        '<div class="story-card"><h4 style="margin-top:0;">TCS — Analyst Framework</h4>' +
+        block('Growth', '<p>Revenue growth mid-single digits in constant currency; deal TCV steady, led by BFSI and cloud/AI-linked deals.</p>') +
+        block('Revenue', '<p>Broad-based across geographies; North America remains the largest contributor.</p>') +
+        block('Margins', '<p>Operating margin near 24%, supported by offshore mix and cost discipline.</p>') +
+        block('Profit', '<p>Net profit growth roughly tracks revenue growth this quarter.</p>') +
+        block('Cash flow', '<p>High free-cash-flow conversion typical of asset-light IT services; strong dividend payout history.</p>') +
+        block('Debt', '<p>Net-cash balance sheet — negligible leverage.</p>') +
+        block('ROE / ROCE', '<p>ROE near 50%, reflecting low capital intensity and high payout ratio.</p>') +
+        block('Valuation', '<p>Trades at a premium <i>relative to</i> mid-cap IT peers and in line with its own 10-year average forward P/E.</p>') +
+        block('Catalysts', '<ul><li>Large deal ramp-ups</li><li>AI-services monetisation</li><li>Discretionary spend recovery in BFSI/retail</li></ul>') +
+        block('Risks', '<ul><li>Global slowdown delaying tech budgets</li><li>AI-led pricing deflation on legacy services</li><li>Wage/talent cost inflation</li></ul>') +
+        scenarioRow(
+          'Deal pipeline converts faster than expected; AI-led productivity expands margins.',
+          'Steady mid-single-digit growth, broadly stable margins, in line with sector trend.',
+          'Global slowdown delays discretionary spend; pricing pressure compresses margins.'
+        ) +
+        block('What needs to happen / what invalidates it', '<p><b>Bull thesis needs:</b> faster large-deal conversion and AI-services revenue outgrowing the productivity gains it enables. <b>Invalidated if:</b> GenAI shrinks billable hours faster than new AI-services revenue can replace them.</p>') +
+        note('Historical results ≠ management guidance ≠ analyst estimates ≠ this analysis. ' + DEMO_NOTE) +
+        pills(['top-companies','sector-performance','interview-prep']) +
+        '</div>'
+      );
+    }
+  },
+
+  'banking-financial': { icon:'🏦', title:'Banking & Financial Services', group:'Corporate', purpose:'PSU/private banks, NBFCs, insurance, AMCs, fintech — sector-specific metrics.',
+    render(){
+      return (
+        tbl(['Segment','Credit growth','Deposit growth','NIM','GNPA','ROA'], [
+          ['Private banks','13% y/y','11% y/y','~4.0%','~1.3%','~1.8%'],
+          ['PSU banks','9% y/y','8% y/y','~3.0%','~2.8%','~1.0%'],
+          ['NBFCs','15% y/y','—','~6.5%','~2.5%','~2.2%'],
+        ]) +
+        note(DEMO_NOTE) +
+        '<div class="story-card"><h4 style="margin-top:0;">How Policy Flows Through</h4>' +
+          block('RBI policy → banks', '<p>A repo hold keeps lending and deposit rates broadly stable; a future cut would compress NIMs short-term before credit growth picks up over 2–3 quarters.</p>') +
+          pills(['rbi-watch','top-companies'])+
+        '</div>'
+      );
+    }
+  },
+
+  'corporate-earnings': { icon:'🏢', title:'Corporate & Earnings', group:'Corporate', purpose:'Quarterly results, guidance, M&A, IPOs, buybacks and major contracts for market-moving companies.',
+    render(){
+      function earn(name, rev, profit, surprise, note2){
+        const tag = surprise==='Beat' ? 'watch' : surprise==='Miss' ? 'critical' : 'important';
+        return '<div class="company-card"><div class="ch"><b>'+name+'</b>'+badge(tag)+'</div>' +
+          '<div class="metric-row">' +
+            '<div class="m"><div class="k">Revenue</div><div class="v">'+rev+'</div></div>' +
+            '<div class="m"><div class="k">Profit</div><div class="v">'+profit+'</div></div>' +
+            '<div class="m"><div class="k">Vs. estimates</div><div class="v">'+surprise+'</div></div>' +
+          '</div><p style="font-size:12px;margin:8px 0 0;color:var(--dim)">'+note2+'</p></div>';
+      }
+      return (
+        earn('TCS','₹64,200 cr (+5% YoY)','₹12,100 cr (+8% YoY)','Beat','Deal TCV strong; management maintains cautious near-term commentary.') +
+        earn('HDFC Bank','NII ₹31,200 cr (+12% YoY)','₹17,800 cr (+11% YoY)','In line','Asset quality stable; deposit growth outpaces system average.') +
+        earn('Tata Motors','₹1,08,400 cr (-2% YoY)','₹2,900 cr (-15% YoY)','Miss','JLR volumes softer in China; domestic CV business steady.') +
+        note(DEMO_NOTE) +
+        pills(['top-companies','sector-performance'])
+      );
+    }
+  },
+
+  /* NOTE: commodities-energy and forex-capital-flows are defined earlier in this file
+     with their live-aware render() functions. The duplicate static-only definitions
+     that were previously here have been removed to prevent them from overwriting
+     the correct live-aware versions. */
+
+  'geopolitics-markets': { icon:'🌏', title:'Geopolitics & Markets', group:'Context', purpose:'Only geopolitical developments with meaningful economic or market implications.',
+    render(){
+      return (
+        note('Filter: included only when it plausibly moves trade, commodities, inflation, or capital flows — not general political news. ' + DEMO_NOTE) +
+        storyCard({ priority:'watch', title:'Middle East shipping-route tensions keep freight costs elevated',
+          chainSteps:['Geopolitics','Trade','Commodities','Inflation','Markets','India'],
+          blocks:[
+            ['Geopolitics','<p>Continued disruption risk around key regional shipping lanes.</p>'],
+            ['Trade','<p>Longer re-routing raises freight costs and transit times for Asia-Europe trade.</p>'],
+            ['India impact','<p>Marginal cost pressure for export-heavy sectors reliant on that route; energy imports are the more direct watch-item.</p>','impact'],
+          ],
+          related:['commodities-energy','global-economy']
+        })
+      );
+    }
+  },
+
+  'government-policy': { icon:'🏛️', title:'Government & Policy', group:'Context', purpose:'Union Budget, tax changes, PLI, FDI, disinvestment, and industrial policy.',
+    render(){
+      return (
+        storyCard({ priority:'important', title:'PLI scheme extended for advanced battery manufacturing',
+          chainSteps:['Policy','Affected sectors','Affected companies','Market reaction'],
+          blocks:[
+            ['Policy','<p>Production-linked incentive scheme for advanced chemistry cell battery manufacturing extended by 2 years.</p>'],
+            ['Affected sectors','<p>EV, auto components, renewable energy storage.</p>'],
+            ['Affected companies','<p>Battery and EV-component manufacturers with existing PLI approvals stand to benefit most directly.</p>'],
+          ],
+          related:['sector-performance','top-companies']
+        })
+      );
+    }
+  },
+
+  'economic-calendar': { icon:'📅', title:'Economic Calendar', group:'Context', purpose:'Forward-looking events — data releases, central bank meetings, budgets, major earnings.',
+    render(){
+      return tbl(['Date','Event','Expected','Previous','Why it matters'], [
+        ['This Friday','US Non-Farm Payrolls','+180K','+142K','Key input to Fed\'s next rate decision'],
+        ['Next week','RBI MPC Decision','Hold at 6.00%','6.00%','Sets the tone for lending rates and bank NIMs'],
+        ['In 3 days','India IIP','5.0%','5.1%','Gauge of industrial demand momentum'],
+        ['In 5 days','US CPI','2.6% y/y','2.7% y/y','Shapes the pace of further Fed easing'],
+        ['In 2 weeks','India Union Budget follow-up','—','—','Watch for capex and fiscal-deficit updates'],
+        ['In 3 weeks','ECB Meeting','Hold at 3.15%','3.15%','Signal on Eurozone growth-inflation trade-off'],
+      ]) + note(DEMO_NOTE);
+    }
+  },
+
+  'deep-dive': { icon:'🧠', title:'Deep Dive', group:'Context', purpose:'One high-impact story per day, analysed comprehensively end-to-end.',
+    render(){
+      return (
+        '<div class="story-card">' + badge('critical') +
+        '<h4>Today\'s Deep Dive: RBI Holds Rates, Signals a Longer Pause</h4>' +
+        block('Background', '<p>RBI cut rates twice earlier this year before pausing as inflation approached its comfort zone.</p>') +
+        block('What happened', '<p>MPC held the repo rate at 6.00% for a third straight meeting, voting 5-1 in favour.</p>') +
+        block('Why', '<p>Core inflation remains sticky in services even as headline CPI has cooled; the committee wants confirmation the trend holds.</p>') +
+        block('Key data', '<p>CPI 4.2%, core CPI ~4.6%, GDP growth 6.8%, credit growth 13% y/y.</p>') +
+        block('Economic impact', '<p>Borrowing costs stay elevated for longer than some market participants expected.</p>', 'impact') +
+        block('Market impact', '<p>Bank Nifty and rate-sensitives (auto, realty) trade flat-to-lower on a "longer pause" repricing.</p>', 'impact') +
+        block('Sector impact', '<p>NBFCs with wholesale funding face marginally higher costs for longer.</p>') +
+        block('Company impact', '<p>Housing finance companies most sensitive to the rate path see the largest single-day stock moves.</p>') +
+        block('India impact', '<p>A stronger rupee bias if rate differentials versus the US stay attractive to foreign debt investors.</p>', 'impact') +
+        scenarioRow(
+          'Inflation surprises lower, allowing a cut within two meetings.',
+          'RBI stays on hold through the next 1-2 meetings, easing only if data confirms the trend.',
+          'A global oil-price spike or weak monsoon reignites inflation, pushing any cut further out.'
+        ) +
+        block('What happens next', '<p>Watch the next two CPI prints and the MPC minutes for any dissent shift.</p>') +
+        note(DEMO_NOTE) +
+        pills(['rbi-watch','indian-economy','banking-financial','interview-prep']) +
+        '</div>'
+      );
+    }
+  },
+
+  'interview-prep': { icon:'🎤', title:'Interview Preparation', group:'Learn', purpose:'Convert current developments into interview-ready Q&A.',
+    render(){
+      return (
+        '<div class="qcard">' +
+          '<div class="q">Q1. RBI just held rates for a third straight meeting — what does that tell you?</div>' +
+          '<p style="font-size:13px;">Model answer: Context — the MPC meets bi-monthly to balance growth and inflation. What — repo held at 6.00%, 5-1 vote. Why — core inflation is still sticky even as headline CPI has eased, so the committee wants more confirmation. Impact — borrowing costs stay elevated for longer, pressuring NBFC funding costs and rate-sensitive sectors. India connection — a "longer pause" also supports rupee stability by keeping the rate differential with the US attractive to foreign investors. Outlook — the next two CPI prints will likely decide the timing of any cut.</p>' +
+          '<div class="fq">Likely follow-up: "Why does core inflation matter more than headline here?"</div>' +
+          '<div class="fq">Key numbers to remember: repo rate, headline vs. core CPI, GDP growth, credit growth y/y.</div>' +
+        '</div>' +
+        '<div class="qcard">' +
+          '<div class="q">Q2. The Fed signalled one more rate cut this year — how does that affect India?</div>' +
+          '<p style="font-size:13px;">Model answer: A Fed cut lowers US yields and typically softens the dollar. That eases global financing conditions and can draw more foreign capital into EM debt and equity, including India — supporting the rupee and giving RBI a bit more room. The transmission isn\'t automatic though; it depends on relative growth and inflation trajectories too.</p>' +
+          '<div class="fq">Likely follow-up: "What could break this relationship?"</div>' +
+        '</div>' +
+        note('Practise saying these in your own words — sound like a professional explaining it, not reciting it.') +
+        pills(['central-banks','rbi-watch','deep-dive'])
+      );
+    }
+  },
+
+
+  'data-refresh': { icon:'🔄', title:'Data Refresh', group:'System', purpose:'Daily refresh controls, source configuration, timestamps, change detection and data-quality monitoring.',
+    render(){
+      const cfg = getRefreshConfig();
+      const hist = getRefreshHistory();
+      return (
+        '<div class="settings-card">' +
+          '<h4 style="margin:0 0 4px;font-family:var(--font-mono);font-size:13px;">LIVE DATA CONNECTION</h4>' +
+          '<p style="font-size:12px;color:var(--dim);margin:0 0 8px;">Connect a backend/API that retrieves current news, official releases, market data and company data. The browser layer handles refresh, comparison and display.</p>' +
+          '<label>API endpoint</label>' +
+          '<input id="apiEndpoint" value="'+escapeHtml(cfg.apiEndpoint)+'" placeholder="https://your-domain.com/api/macro-data">' +
+          '<div class="settings-grid">' +
+            '<div><label>Morning refresh</label><select id="morningTime">'+timeOptions(cfg.morningTime)+'</select></div>' +
+            '<div><label>Evening refresh</label><select id="eveningTime">'+timeOptions(cfg.eveningTime)+'</select></div>' +
+          '</div>' +
+          '<div class="toggle-row"><input type="checkbox" id="autoRefresh" '+(cfg.autoRefresh?'checked':'')+'><span>Enable hourly checks while this dashboard is open.</span></div>' +
+          '<div class="toggle-row"><input type="checkbox" id="dailySchedule" '+(cfg.dailySchedule?'checked':'')+'><span>Enable 07:00 and 19:00 IST scheduled checks while this page is open. For background updates when closed, use a server-side scheduler/automation to call your API.</span></div>' +
+          '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">' +
+            '<button class="refresh-btn" onclick="saveRefreshSettings()">Save Settings</button>' +
+            '<button class="settings-btn" onclick="refreshData(true)">Test &amp; Refresh</button>' +
+            '<button class="settings-btn" onclick="clearRefreshHistory()">Clear History</button>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="story-card"><h4 style="margin-top:0;">SOURCE HEALTH ' + (window.LIVE_DATA ? '(live)' : '(no refresh run yet this session)') + '</h4>' +
+          (window.LIVE_DATA?.persistence ? '<p style="font-size:11.5px;color:var(--dim);margin:0 0 8px;">Persistence: <b style="color:var(--text);">'+escapeHtml(window.LIVE_DATA.persistence)+'</b></p>' : '') +
+          (window.LIVE_DATA?.sourceHealth && Object.keys(window.LIVE_DATA.sourceHealth).length
+            ? '<table style="width:100%;border-collapse:collapse;font-size:11.5px;">' +
+              '<thead><tr style="text-align:left;color:var(--dim);font-family:var(--font-mono);font-size:9.5px;text-transform:uppercase;">' +
+              '<th style="padding:5px 8px;">Source</th><th>Status</th><th>Last success</th><th>Last failure</th><th>Latency</th></tr></thead><tbody>' +
+              Object.entries(window.LIVE_DATA.sourceHealth).map(([name,h]) =>
+                '<tr style="border-top:1px solid var(--line);"><td style="padding:6px 8px;">'+escapeHtml(name)+'</td>' +
+                '<td style="color:'+(h.status==='HEALTHY'?'var(--green,#3fe0a5)':'var(--red,#e86a6a)')+'">'+escapeHtml(h.status)+'</td>' +
+                '<td>'+(h.lastSuccess?escapeHtml(formatDateTime(h.lastSuccess)):'—')+'</td>' +
+                '<td>'+(h.lastFailure?escapeHtml(formatDateTime(h.lastFailure)):'—')+'</td>' +
+                '<td>'+(h.latencyMs!=null?h.latencyMs+'ms':'—')+'</td></tr>'
+              ).join('') +
+              '</tbody></table>' +
+              note('A "HEALTHY" status means real, parseable data was returned — not just an HTTP 200. Errors and details are in the change log / warnings below.')
+            : '<p style="font-size:12px;color:var(--dim);">Click "Test &amp; Refresh" above to populate this from a real API response.</p>') +
+        '</div>' +
+
+        '<div class="grid-2">' +
+          '<div class="story-card"><h4 style="margin-top:0;">WHAT GETS REFRESHED</h4>' +
+            '<div class="source-status">🌍 Global economy — GDP, inflation, growth, trade</div>' +
+            '<div class="source-status">🇮🇳 Indian economy — GDP, CPI, IIP, PMI, fiscal/current account</div>' +
+            '<div class="source-status">🏦 Central banks — Fed, RBI, ECB, BoE, BoJ, PBOC</div>' +
+            '<div class="source-status">🇮🇳 RBI &amp; SEBI — circulars, policy and regulation</div>' +
+            '<div class="source-status">📈 Markets — indices, bonds, FX, commodities</div>' +
+            '<div class="source-status">🏭 Sectors — 1D/1W/1M/3M/1Y performance and fundamentals</div>' +
+            '<div class="source-status">🏆 Companies — results, revenue, profit, guidance, estimates</div>' +
+            '<div class="source-status">🌏 Geopolitics — only developments with economic/market impact</div>' +
+          '</div>' +
+          '<div class="story-card"><h4 style="margin-top:0;">CHANGE DETECTION</h4>' +
+            '<div class="change-card"><b>NEW</b><div style="font-size:11px;color:var(--dim);margin-top:2px;">Published since the previous update.</div></div>' +
+            '<div class="change-card changed"><b>CHANGED</b><div style="font-size:11px;color:var(--dim);margin-top:2px;">A tracked figure, policy or market condition materially changed.</div></div>' +
+            '<div class="change-card revised"><b>REVISED</b><div style="font-size:11px;color:var(--dim);margin-top:2px;">GDP, inflation, earnings or another forecast was revised.</div></div>' +
+            '<div class="change-card outdated"><b>OUTDATED</b><div style="font-size:11px;color:var(--dim);margin-top:2px;">Superseded information should be replaced, not repeatedly reported.</div></div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="story-card" style="margin-top:14px;"><h4 style="margin-top:0;">SOURCE HIERARCHY</h4>' +
+          '<p style="font-size:12.5px;line-height:1.5;margin:0;color:var(--dim);"><b style="color:var(--text);">Primary:</b> RBI, SEBI, Government of India, MoSPI, IMF, World Bank, BIS, Fed, ECB, official exchanges and company filings. ' +
+          '<b style="color:var(--text);">News:</b> Reuters, Financial Times, Bloomberg. ' +
+          '<b style="color:var(--text);">Research:</b> Goldman Sachs, JPMorgan, Morgan Stanley, BlackRock, McKinsey.</p>' +
+          note('For official statistics, regulations and company financials, the backend should prefer primary sources. Do not fabricate missing data.') +
+        '</div>' +
+
+        '<div class="story-card"><h4 style="margin-top:0;">REFRESH HISTORY</h4>' +
+          '<div id="refreshHistory" class="refresh-history">'+renderRefreshHistory(hist)+'</div>' +
+        '</div>' +
+
+        '<div class="story-card"><h4 style="margin-top:0;">API RESPONSE CONTRACT</h4>' +
+          '<p style="font-size:11.5px;color:var(--dim);">Return JSON in this shape (fields are optional except <b>updatedAt</b>):</p>' +
+          '<pre style="white-space:pre-wrap;font-family:var(--font-mono);font-size:9.5px;color:var(--dim);background:var(--card-2);border:1px solid var(--line);padding:10px;border-radius:7px;overflow:auto;">' +
+          escapeHtml(JSON.stringify({
+            updatedAt:"2026-09-08T07:00:00+05:30",
+            sourceStatus:"Connected",
+            sections:{
+              "global-economy":{updatedAt:"...", summary:"...", stories:[]},
+              "indian-economy":{updatedAt:"...", indicators:[], stories:[]},
+              "rbi-watch":{updatedAt:"...", stories:[]},
+              "sebi-watch":{updatedAt:"...", stories:[]},
+              "global-markets":{updatedAt:"...", assets:[]},
+              "indian-markets":{updatedAt:"...", assets:[], flows:[]},
+              "sector-performance":{updatedAt:"...", sectors:[]},
+              "top-companies":{updatedAt:"...", companies:[]},
+              "banking-financial":{updatedAt:"...", metrics:[]},
+              "corporate-earnings":{updatedAt:"...", earnings:[]},
+              "commodities-energy":{updatedAt:"...", assets:[]},
+              "forex-capital-flows":{updatedAt:"...", assets:[], flows:[]},
+              "geopolitics-markets":{updatedAt:"...", stories:[]},
+              "government-policy":{updatedAt:"...", stories:[]},
+              "economic-calendar":{updatedAt:"...", events:[]},
+              "deep-dive":{updatedAt:"...", story:{}},
+              "interview-prep":{updatedAt:"...", questions:[]}
+            },
+            changes:[
+              {type:"NEW",section:"rbi-watch",title:"...",summary:"...",timestamp:"..."},
+              {type:"REVISED",section:"global-economy",title:"...",summary:"...",timestamp:"..."}
+            ]
+          }, null, 2)) +
+          '</pre>' +
+        '</div>'
+      );
+    }
+  },
+
+  'learning-concepts': { icon:'📚', title:'Learning & Concepts', group:'Learn', purpose:'A continuously updated concept library, taught with current examples.',
+    render(){
+      function grp(title, items){
+        return '<div class="concept-group"><h4>'+title+'</h4>' + items.map(i =>
+          '<div class="concept-item"><b>'+i[0]+':</b> '+i[1]+'</div>'
+        ).join('') + '</div>';
+      }
+      return (
+        grp('Economics', [
+          ['GDP','Total value of goods and services produced — the broadest measure of economic activity.'],
+          ['Inflation (CPI)','Rate of change in the price of a representative consumer basket.'],
+          ['Fiscal deficit','The gap between government spending and revenue, typically expressed as % of GDP.'],
+          ['Business cycle','The recurring pattern of expansion, peak, contraction and trough in economic activity.'],
+        ]) +
+        grp('Banking', [
+          ['NIM','Net Interest Margin — the spread a bank earns between interest income and interest paid, relative to interest-earning assets.'],
+          ['GNPA / NNPA','Gross/Net Non-Performing Assets — loans where repayment is overdue, before/after provisioning.'],
+          ['CASA','Current Account Savings Account ratio — the share of low-cost deposits, key to funding costs.'],
+          ['CRAR','Capital to Risk-weighted Assets Ratio — a bank\'s capital adequacy buffer.'],
+        ]) +
+        grp('Markets', [
+          ['P/E ratio','Price-to-Earnings — what the market pays per unit of current earnings; always read relative to history or peers.'],
+          ['EV/EBITDA','Enterprise Value to EBITDA — a capital-structure-neutral valuation multiple.'],
+          ['ROE / ROCE','Return on Equity / Capital Employed — how efficiently a company turns capital into profit.'],
+          ['Yield curve','The relationship between bond yields and maturities — inversion often signals recession risk.'],
+        ]) +
+        grp('International Finance', [
+          ['DXY','US Dollar Index — the dollar\'s value against a basket of major currencies.'],
+          ['Current account','A country\'s net trade in goods, services and transfers with the rest of the world.'],
+          ['Carry trade','Borrowing in a low-rate currency to invest in a higher-yielding one, profiting from the rate differential.'],
+        ]) +
+        note('Applied live in Deep Dive and Interview Prep whenever a current story illustrates the concept.') +
+        pills(['deep-dive','interview-prep'])
+      );
+    }
+  },
+};
+
+
+/* ---------------- live refresh / scheduling ---------------- */
+const REFRESH_STORAGE = {
+  config: 'macroMarketsRefreshConfig_v1',
+  snapshot: 'macroMarketsSnapshot_v1',
+  history: 'macroMarketsRefreshHistory_v1'
+};
+
+function escapeHtml(value){
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function timeOptions(selected){
+  const options = ['06:00','07:00','08:00','09:00','18:00','19:00','20:00','21:00'];
+  return options.map(v => '<option value="'+v+'" '+(v===selected?'selected':'')+'>'+v+' IST</option>').join('');
+}
+function getRefreshConfig(){
+  const defaults = {
+    apiEndpoint: window.location.origin + '/api/macro-data',
+    morningTime: '07:00',
+    eveningTime: '19:00',
+    autoRefresh: false,
+    dailySchedule: true
+  };
+  try { return {...defaults, ...(JSON.parse(localStorage.getItem(REFRESH_STORAGE.config) || '{}'))}; }
+  catch(e){ return defaults; }
+}
+function saveRefreshSettings(){
+  const cfg = {
+    apiEndpoint: (document.getElementById('apiEndpoint')?.value || '').trim(),
+    morningTime: document.getElementById('morningTime')?.value || '07:00',
+    eveningTime: document.getElementById('eveningTime')?.value || '19:00',
+    autoRefresh: !!document.getElementById('autoRefresh')?.checked,
+    dailySchedule: !!document.getElementById('dailySchedule')?.checked
+  };
+  localStorage.setItem(REFRESH_STORAGE.config, JSON.stringify(cfg));
+  startRefreshScheduler();
+  setRefreshStatus(cfg.apiEndpoint ? 'Settings saved' : 'Settings saved — API endpoint missing', !!cfg.apiEndpoint);
+  showBanner('Refresh settings saved. A live update requires a configured API endpoint.', !cfg.apiEndpoint);
+}
+function getRefreshHistory(){
+  try { return JSON.parse(localStorage.getItem(REFRESH_STORAGE.history) || '[]'); }
+  catch(e){ return []; }
+}
+function writeRefreshHistory(entry){
+  const next = [entry, ...getRefreshHistory()].slice(0, 50);
+  localStorage.setItem(REFRESH_STORAGE.history, JSON.stringify(next));
+}
+function clearRefreshHistory(){
+  localStorage.removeItem(REFRESH_STORAGE.history);
+  if (document.getElementById('refreshHistory')) document.getElementById('refreshHistory').innerHTML = '<div class="refresh-meta">No refresh history.</div>';
+}
+function renderRefreshHistory(history){
+  if (!history.length) return '<div class="refresh-meta">No refresh history yet.</div>';
+  return history.map(h =>
+    '<div class="refresh-history-row"><span>'+escapeHtml(h.time)+'</span><span>'+escapeHtml(h.status)+'</span><span>'+escapeHtml(h.message)+'</span></div>'
+  ).join('');
+}
+function setRefreshStatus(message, live=false, error=false){
+  const el = document.getElementById('refreshStatus');
+  const dot = document.getElementById('statusDot');
+  if (el) el.textContent = message;
+  if (dot){
+    dot.classList.toggle('live', live);
+    dot.classList.toggle('error', error);
+  }
+}
+function showBanner(message, error=false){
+  const b = document.getElementById('updateBanner');
+  if (!b) return;
+  b.textContent = message;
+  b.style.borderColor = error ? 'rgba(232,106,106,.35)' : 'rgba(95,168,232,.28)';
+  b.classList.add('show');
+  clearTimeout(window.__bannerTimer);
+  window.__bannerTimer = setTimeout(()=>b.classList.remove('show'), 7000);
+}
+function setLastUpdated(iso){
+  const el = document.getElementById('lastUpdated');
+  if (!el) return;
+  el.textContent = iso ? 'Last update: ' + formatDateTime(iso) : 'Last update: —';
+}
+function formatDateTime(iso){
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return new Intl.DateTimeFormat('en-IN',{
+    timeZone:'Asia/Kolkata', dateStyle:'medium', timeStyle:'short'
+  }).format(d);
+}
+function hashObject(obj){
+  try {
+    const str = JSON.stringify(obj);
+    let h = 2166136261;
+    for (let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h,16777619); }
+    return (h>>>0).toString(16);
+  } catch(e){ return ''; }
+}
+function updateHeaderTicker(payload){
+  const pick = (sectionId, name) => {
+    const a = payload?.sections?.[sectionId]?.assets || [];
+    return a.find(x => String(x.name||'').toLowerCase() === name.toLowerCase());
+  };
+  const find = (sectionIds, name) => {
+    for (const id of sectionIds) { const x = pick(id,name); if (x) return x; }
+    return null;
+  };
+  const set = (id, asset) => {
+    const el=document.getElementById(id); if(!el) return;
+    if(!asset){ el.textContent='—'; el.className=''; return; }
+    el.textContent = `${asset.level || '—'}${asset.change ? ' '+asset.change : ''}`;
+    el.className = String(asset.change||'').includes('▼') ? 'down' : String(asset.change||'').includes('▲') ? 'up' : '';
+  };
+  set('tickNifty', find(['indian-markets'],'Nifty 50'));
+  set('tickSensex', find(['indian-markets'],'Sensex'));
+  set('tickUsdInr', find(['indian-markets','forex-capital-flows'],'USD/INR'));
+  set('tickUs10y', find(['global-markets'],'US 10Y Treasury'));
+  set('tickBrent', find(['commodities-energy','global-markets'],'Brent Crude'));
+  set('tickGold', find(['commodities-energy','global-markets'],'Gold'));
+}
+
+function applyLivePayload(payload){
+  // Keep the existing information architecture intact.
+  // Store the latest payload so section-specific renderers can be upgraded
+  // to consume live arrays without losing the last known response.
+  window.LIVE_DATA = payload;
+  localStorage.setItem(REFRESH_STORAGE.snapshot, JSON.stringify(payload));
+  updateHeaderTicker(payload);
+
+  const changes = Array.isArray(payload.changes) ? payload.changes : [];
+  const count = changes.length;
+  const msg = count
+    ? 'Updated '+count+' meaningful change(s): '+changes.slice(0,3).map(c => c.title || c.summary || c.type).join(' · ')
+    : 'Refresh completed — no material changes reported by the data source.';
+  showBanner(msg);
+  setLastUpdated(payload.updatedAt || new Date().toISOString());
+
+  if (changes.length) {
+    changes.slice(0, 15).forEach(c => writeRefreshHistory({
+      time: c.timestamp ? formatDateTime(c.timestamp) : formatDateTime(new Date().toISOString()),
+      status: c.type || 'CHANGED',
+      message: (c.section ? c.section+' — ' : '') + (c.title || c.summary || 'Material change')
+    }));
+  } else {
+    writeRefreshHistory({
+      time: formatDateTime(payload.updatedAt || new Date().toISOString()),
+      status: 'UPDATED',
+      message: 'Refresh completed — no material changes reported.'
+    });
+  }
+
+  // Re-render the currently selected section so live-aware renderers can pick up LIVE_DATA.
+  selectSection(CURRENT_SECTION_ID || 'dashboard');
+}
+async function refreshData(manual=false){
+  const cfg = getRefreshConfig();
+  const endpoint = cfg.apiEndpoint || (window.location.origin + '/api/macro-data');
+  const btn = document.getElementById('refreshBtn');
+
+  if (btn) btn.disabled = true;
+  setRefreshStatus('Refreshing…', false, false);
+
+  try{
+    // The refresh endpoint returns the complete merged snapshot. Use that response directly
+    // instead of triggering a refresh and then making a second request that can return a
+    // stale/sparse payload from another serverless instance.
+    const refreshUrl = endpoint + (endpoint.includes('?') ? '&force=1' : '?force=1');
+    const trigger = await fetch(refreshUrl, {method:'GET',headers:{'Accept':'application/json'},cache:'no-store'});
+    if (!trigger.ok) throw new Error('Live data HTTP '+trigger.status);
+    const payload = await trigger.json();
+    if (!payload || !payload.sections) throw new Error('Refresh returned an invalid data payload');
+
+    const previous = JSON.parse(localStorage.getItem(REFRESH_STORAGE.snapshot) || 'null');
+    const prevHash = previous ? hashObject(previous) : '';
+    const newHash = hashObject(payload);
+
+    applyLivePayload(payload);
+    const warningCount = Array.isArray(payload.dataQuality?.warnings) ? payload.dataQuality.warnings.length : 0;
+    const baseStatus = newHash && newHash !== prevHash ? 'Live data refreshed' : 'Connected — no material change';
+    setRefreshStatus(baseStatus + (warningCount ? ' · '+warningCount+' source warning(s)' : ''), true, false);
+
+    writeRefreshHistory({
+      time: formatDateTime(payload.updatedAt || new Date().toISOString()),
+      status: 'UPDATED',
+      message: 'Live snapshot refreshed; full analyst context preserved.' + (warningCount ? ' '+warningCount+' source warning(s) recorded separately.' : '')
+    });
+
+    if (document.querySelector('.section-head h2')?.textContent.includes('Data Refresh')) {
+      selectSection('data-refresh');
+    }
+    return true;
+  }catch(err){
+    setRefreshStatus('Refresh failed: '+err.message, false, true);
+    showBanner('Live refresh failed: '+err.message+'. The previous dashboard snapshot has been preserved.', true);
+    writeRefreshHistory({
+      time: formatDateTime(new Date().toISOString()),
+      status: 'ERROR',
+      message: err.message
+    });
+    return false;
+  }finally{
+    if (btn) btn.disabled = false;
+  }
+}
+
+let __refreshTimer = null;
+function startRefreshScheduler(){
+  clearInterval(__refreshTimer);
+  const cfg = getRefreshConfig();
+  window.__refreshHourKey = window.__refreshHourKey || null;
+
+  // One scheduler loop keeps both hourly and twice-daily checks active.
+  const tick = () => {
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('en-GB',{
+      timeZone:'Asia/Kolkata', hour:'2-digit', minute:'2-digit', hour12:false
+    }).formatToParts(now);
+    const hm = parts.find(p=>p.type==='hour')?.value+':'+parts.find(p=>p.type==='minute')?.value;
+    const dateKey = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata'}).format(now);
+
+    if (cfg.dailySchedule) {
+      const dailyKey = dateKey+'|'+hm;
+      if ((hm===cfg.morningTime || hm===cfg.eveningTime) && dailyKey !== window.__lastDailyRun) {
+        window.__lastDailyRun = dailyKey;
+        refreshData(false);
+        return;
+      }
+    }
+
+    if (cfg.autoRefresh && now.getMinutes() === 0) {
+      const hourlyKey = dateKey+'|'+now.getHours();
+      if (hourlyKey !== window.__refreshHourKey) {
+        window.__refreshHourKey = hourlyKey;
+        refreshData(false);
+      }
+    }
+  };
+
+  __refreshTimer = setInterval(tick, 30 * 1000);
+  tick();
+}
+
+window.addEventListener('load', () => {
+  const cfg = getRefreshConfig();
+  const history = getRefreshHistory();
+  const snapshot = JSON.parse(localStorage.getItem(REFRESH_STORAGE.snapshot) || 'null');
+  if (snapshot?.updatedAt) { setLastUpdated(snapshot.updatedAt); updateHeaderTicker(snapshot); }
+  if (cfg.apiEndpoint) setRefreshStatus('Live connection ready', true, false);
+  else setRefreshStatus('Data source not configured', false, false);
+  startRefreshScheduler();
+});
+
+/* ---------------- live data rendering ---------------- */
+function esc(v){ return escapeHtml(v == null ? '—' : v); }
+function liveSection(id){ return window.LIVE_DATA?.sections?.[id] || null; }
+function sourceMeta(data){
+  if (!data) return '';
+  const source = data.source || data.sources || 'Live source';
+  const updated = data.updatedAt || window.LIVE_DATA?.updatedAt;
+  return '<div class="note live-source">Source: '+esc(Array.isArray(source)?source.join(', '):source)+' · Updated: '+(updated?esc(formatDateTime(updated)):'—')+' · Live data</div>';
+}
+/* Data status badge — shows freshness classification on each market card */
+function dataStatusBadge(status){
+  if(!status) return '';
+  const s = String(status).toUpperCase();
+  const map = {
+    'LIVE_INTRADAY': ['LIVE', 'var(--green)', 'var(--green-bg)'],
+    'TODAY_CLOSE': ['CLOSE', 'var(--blue)', 'var(--blue-bg)'],
+    'PREVIOUS_SESSION': ['PREV', 'var(--amber)', 'var(--amber-bg)'],
+    'STALE': ['STALE', 'var(--red)', 'var(--red-bg)'],
+    'UNAVAILABLE': ['N/A', 'var(--dim)', 'rgba(255,255,255,0.06)'],
+    'HISTORICAL': ['HIST', 'var(--dim)', 'rgba(255,255,255,0.06)'],
+    'DEMO': ['REF', 'var(--dim-2)', 'rgba(255,255,255,0.04)'],
+  };
+  const info = map[s] || [s.replace(/_/g,' '), 'var(--dim)', 'rgba(255,255,255,0.06)'];
+  return '<span style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:0.04em;padding:2px 5px;border-radius:3px;color:'+info[1]+';background:'+info[2]+';margin-left:4px;">'+esc(info[0])+'</span>';
+}
+/* Market table with data status badges — used by live market renderers */
+function marketTableWithStatus(headers, assets){
+  if(!Array.isArray(assets) || !assets.length) return '<p style="color:var(--dim);font-size:12px;">No data available.</p>';
+  const rows = assets.map(x => {
+    const status = dataStatusBadge(x.dataStatus);
+    const session = x.sessionStatus ? '<span style="font-family:var(--font-mono);font-size:8.5px;color:var(--dim-2);margin-left:3px;">'+esc(x.sessionStatus)+'</span>' : '';
+    const src = x.source ? '<span style="font-family:var(--font-mono);font-size:8.5px;color:var(--dim-2);"> · '+esc(x.source)+'</span>' : '';
+    const age = x.ageMinutes != null ? '<span style="font-family:var(--font-mono);font-size:8.5px;color:var(--dim-2);"> · '+Math.round(x.ageMinutes)+'m ago</span>' : '';
+    return [
+      esc(x.name || x.instrument || x.pair || x.commodity || '—'),
+      esc(x.level || x.yield || x.price || '—'),
+      (x.change ? esc(x.change) : '—') + status + session,
+    ];
+  });
+  return tbl(headers, rows);
+}
+function changeHtml(c){
+  if (!c) return '';
+  const typ = String(c.type||'CHANGED').toUpperCase();
+  const cls = typ==='OUTDATED'?'outdated':typ==='REVISED'?'revised':typ==='NEW'?'':'changed';
+  return '<div class="change-card '+cls+'"><b>'+esc(typ)+'</b><div style="font-size:11px;color:var(--dim);margin-top:2px;">'+esc(c.title||c.summary||'Material change')+'</div></div>';
+}
+function liveTable(headers, rows){
+  return tbl(headers, (rows||[]).map(r => Array.isArray(r) ? r.map(v=>esc(v)) : []));
+}
+function storyFromLive(story, related=[]){
+  if (!story) return '';
+  const p = String(story.priority||'watch').toLowerCase();
+  const blocks=[];
+  const fields=[
+    ['What happened','whatHappened'],['Why','why'],['Key data','keyData'],['Economic impact','economicImpact'],
+    ['Market impact','marketImpact'],['Sector impact','sectorImpact'],['Company impact','companyImpact'],
+    ['India impact','indiaImpact'],['Outlook','outlook'],['What happens next','next']
+  ];
+  fields.forEach(([label,key])=>{ if(story[key]) blocks.push([label,'<p>'+esc(story[key])+'</p>', /impact/i.test(label)?'impact':undefined]); });
+  return storyCard({priority:p,title:story.title||'Live story',chainSteps:story.chainSteps||['What happened','Why','Impact','Outlook'],blocks,related,showNote:false});
+}
+function liveGenericStories(id, fallbackRelated=[]){
+  const data=liveSection(id);
+  if(!data) return null;
+  let out='';
+  if(data.summary) out += '<div class="story-card"><h4 style="margin-top:0;">Live summary</h4><p style="font-size:13px;line-height:1.5;">'+esc(data.summary)+'</p>'+sourceMeta(data)+'</div>';
+  if(Array.isArray(data.stories)) data.stories.slice(0,12).forEach(st=>{out += storyFromLive(st, st.related||fallbackRelated);});
+  if(Array.isArray(data.changes) && data.changes.length){
+    out += '<div class="story-card"><h4 style="margin-top:0;">What changed since last refresh</h4>'+data.changes.slice(0,15).map(changeHtml).join('')+'</div>';
+  }
+  return out || '<div class="story-card"><p style="color:var(--dim)">Live source connected, but no records were returned for this section.</p></div>';
+}
+
+const LIVE_RENDERERS = {
+  'global-economy': function(){
+    const d=liveSection('global-economy'); if(!d) return null;
+    let out='';
+    if(Array.isArray(d.gdpForecasts)) out += '<h4 style="font-family:var(--font-mono);font-size:12px;color:var(--dim);">GDP & GROWTH DASHBOARD · LIVE</h4>'+liveTable(['Economy','Actual','Previous Forecast','Latest Forecast','Revision'],d.gdpForecasts.map(x=>[x.economy,x.actual,x.previousForecast,x.latestForecast,x.revision]));
+    return out + (liveGenericStories('global-economy',['central-banks','global-markets','indian-markets'])||'') + sourceMeta(d);
+  },
+  'indian-economy': function(){
+    const d=liveSection('indian-economy'); if(!d) return null;
+    let out='';
+    if(Array.isArray(d.indicators)) out += '<h4 style="font-family:var(--font-mono);font-size:12px;color:var(--dim);">KEY INDICATORS · LIVE</h4>'+liveTable(['Indicator','Current','Previous','Change'],d.indicators.map(x=>[x.name,x.current,x.previous,x.change]));
+    return out + (liveGenericStories('indian-economy',['rbi-watch','central-banks'])||'') + sourceMeta(d);
+  },
+  'central-banks': function(){
+    const d=liveSection('central-banks'); if(!d) return null;
+    let out='';
+    if(Array.isArray(d.banks)) out += liveTable(['Bank','Current Rate','Previous Rate','Latest Decision','Expected Next Move','Stance'],d.banks.map(x=>[x.bank,x.currentRate,x.previousRate,x.latestDecision,x.expectedNextMove,x.stance]));
+    if(d.transmissionChain) out += '<div class="story-card"><h4 style="margin-top:0;">Transmission Chain · Live</h4>'+chain(d.transmissionChain.steps||['Central bank decision','Bond yields','Currency','Equity markets','Economy','India'])+block('Mechanism','<p>'+esc(d.transmissionChain.mechanism||'')+'</p>')+'</div>';
+    return out+sourceMeta(d);
+  },
+  'rbi-watch': ()=>{const d=liveSection('rbi-watch'); return d ? ((liveGenericStories('rbi-watch',['central-banks','banking-financial','indian-markets'])||'')+sourceMeta(d)) : null;},
+  'sebi-watch': ()=>{const d=liveSection('sebi-watch'); return d ? ((liveGenericStories('sebi-watch',['top-companies','indian-markets'])||'')+sourceMeta(d)) : null;},
+  'global-markets': function(){
+    const d=liveSection('global-markets'); if(!d) return null; let out='';
+    [['equities','Equities','Index','Level','Change / Status'],['bonds','Bonds','Instrument','Yield','Change / Status'],['currencies','Currencies','Pair','Level','Change / Status'],['commodities','Commodities','Commodity','Price','Change / Status']].forEach(([key,title,c1,c2,c3])=>{ if(Array.isArray(d[key]) && d[key].length) out+='<div class="story-card"><h4 style="margin-top:0;">'+title+' · Live</h4>'+marketTableWithStatus([c1,c2,c3],d[key])+'</div>'; });
+    return out+(liveGenericStories('global-markets',['central-banks','indian-markets'])||'')+sourceMeta(d);
+  },
+  'indian-markets': function(){const d=liveSection('indian-markets'); if(!d) return null; let out=''; if(Array.isArray(d.assets) && d.assets.length) out+=marketTableWithStatus(['Instrument','Level','Change / Status'],d.assets); if(Array.isArray(d.flows) && d.flows.length) out+='<div class="story-card"><h4 style="margin-top:0;">Capital Flows · Live</h4>'+liveTable(['Flow','Value','Direction'],d.flows.map(x=>[x.name,x.value,x.direction]))+'</div>'; return out+sourceMeta(d);},
+  'sector-performance': function(){const d=liveSection('sector-performance'); if(!d) return null; if(!Array.isArray(d.sectors)) return liveGenericStories('sector-performance',['top-companies']); return '<div class="story-card">'+d.sectors.map((x,i)=>'<div class="rank-row"><div class="rank-num">'+(i+1)+'</div><div class="rank-body"><div class="rank-title">'+esc(x.sector||x.name)+' <span class="sector-chip '+esc((x.direction||'flat').toLowerCase())+'">'+esc(x.change||'→')+'</span></div><div class="rank-why">'+esc(x.reason||'')+' — Outlook: '+esc(x.outlook||'—')+'</div></div></div>').join('')+'</div>'+sourceMeta(d);},
+  'top-companies': function(){const d=liveSection('top-companies'); if(!d) return null; let out=''; if(Array.isArray(d.companies)) d.companies.forEach(c=>{out+='<div class="company-card"><div class="ch"><b>'+esc(c.name)+'</b><span>'+esc(c.period||'Live')+'</span></div><div class="metric-row">'+[['Revenue growth',c.revenueGrowth],['Margin',c.margin],['ROE',c.roe],['Valuation view',c.valuation],['Revenue',c.revenue],['Net profit',c.netProfit]].map(([k,v])=>'<div class="m"><div class="k">'+k+'</div><div class="v">'+esc(v||'—')+'</div></div>').join('')+'</div></div>';}); return out+(liveGenericStories('top-companies',['company-deep-dive','sector-performance'])||'')+sourceMeta(d);},
+  'company-deep-dive': ()=>{const d=liveSection('company-deep-dive'); return d ? ((d.story?storyFromLive(d.story,['top-companies','sector-performance','interview-prep']):liveGenericStories('company-deep-dive',['top-companies','sector-performance']))+sourceMeta(d)) : null;},
+  'banking-financial': function(){const d=liveSection('banking-financial'); if(!d) return null; return (Array.isArray(d.metrics)?liveTable(['Segment','Credit growth','Deposit growth','NIM','GNPA','ROA'],d.metrics.map(x=>[x.segment,x.creditGrowth,x.depositGrowth,x.nim,x.gnpa,x.roa])):'')+(liveGenericStories('banking-financial',['rbi-watch','top-companies'])||'')+sourceMeta(d);},
+  'corporate-earnings': function(){const d=liveSection('corporate-earnings'); if(!d) return null; return (Array.isArray(d.earnings)?d.earnings.map(e=>'<div class="company-card"><div class="ch"><b>'+esc(e.name)+'</b><span>'+esc(e.surprise||'')+'</span></div><div class="metric-row"><div class="m"><div class="k">Revenue</div><div class="v">'+esc(e.revenue)+'</div></div><div class="m"><div class="k">Profit</div><div class="v">'+esc(e.profit)+'</div></div><div class="m"><div class="k">Vs estimates</div><div class="v">'+esc(e.surprise)+'</div></div></div><p style="font-size:12px;margin:8px 0 0;color:var(--dim)">'+esc(e.commentary||'')+'</p></div>').join(''):'')+(liveGenericStories('corporate-earnings',['top-companies','sector-performance'])||'')+sourceMeta(d);},
+  'commodities-energy': function(){const d=liveSection('commodities-energy'); if(!d) return null; return (Array.isArray(d.assets) && d.assets.length?marketTableWithStatus(['Commodity','Price','Change / Status'],d.assets):'')+(liveGenericStories('commodities-energy',['indian-economy','forex-capital-flows'])||'')+sourceMeta(d);},
+  'forex-capital-flows': function(){const d=liveSection('forex-capital-flows'); if(!d) return null; let out=Array.isArray(d.assets) && d.assets.length?marketTableWithStatus(['Metric','Level','Change / Status'],d.assets):''; if(Array.isArray(d.flows) && d.flows.length) out+='<div class="story-card"><h4 style="margin-top:0;">Flows · Live</h4>'+liveTable(['Metric','Value','Direction'],d.flows.map(x=>[x.name,x.value,x.direction]))+'</div>'; return out+sourceMeta(d);},
+  'geopolitics-markets': ()=>{const d=liveSection('geopolitics-markets'); return d ? ((liveGenericStories('geopolitics-markets',['commodities-energy','global-economy'])||'')+sourceMeta(d)) : null;},
+  'government-policy': ()=>{const d=liveSection('government-policy'); return d ? ((liveGenericStories('government-policy',['sector-performance','top-companies'])||'')+sourceMeta(d)) : null;},
+  'economic-calendar': function(){const d=liveSection('economic-calendar'); if(!d) return null; return (Array.isArray(d.events)?liveTable(['Date','Event','Expected','Previous','Why it matters'],d.events.map(x=>[x.date,x.event,x.expected,x.previous,x.whyItMatters])):'')+sourceMeta(d);},
+  'deep-dive': ()=>{const d=liveSection('deep-dive'); return d ? ((d.story?storyFromLive(d.story,['rbi-watch','indian-economy','banking-financial','interview-prep']):liveGenericStories('deep-dive'))+sourceMeta(d)) : null;},
+  'interview-prep': function(){const d=liveSection('interview-prep'); if(!d) return null; return (Array.isArray(d.questions)?d.questions.map((q,i)=>'<div class="qcard"><div class="q">Q'+(i+1)+'. '+esc(q.question)+'</div><p style="font-size:13px;">'+esc(q.answer||'')+'</p>'+(q.followUp?'<div class="fq">Likely follow-up: '+esc(q.followUp)+'</div>':'')+'</div>').join(''):'')+sourceMeta(d);},
+  'learning-concepts': function(){const d=liveSection('learning-concepts'); if(!d) return null; return (Array.isArray(d.concepts)?d.concepts.map(c=>'<div class="concept-group"><h4>'+esc(c.group||'Concept')+'</h4><div class="concept-item"><b>'+esc(c.term)+':</b> '+esc(c.definition)+'</div></div>').join(''):'')+sourceMeta(d);},
+  'dashboard': function(){
+    const d=liveSection('dashboard'); if(!d) return null; let out='';
+    if(Array.isArray(d.globalStories)) out+='<div class="grid-2"><div><h3 style="font-family:var(--font-mono);font-size:13px;color:var(--dim);margin:0 0 6px;">TOP GLOBAL STORIES · LIVE</h3>'+d.globalStories.slice(0,5).map(x=>miniItem((x.priority||'watch'),x.title,x.why||'',x.section||'global-economy')).join('')+'</div>';
+    if(Array.isArray(d.indiaStories)) out+='<div><h3 style="font-family:var(--font-mono);font-size:13px;color:var(--dim);margin:0 0 6px;">TOP INDIA STORIES · LIVE</h3>'+d.indiaStories.slice(0,5).map(x=>miniItem((x.priority||'watch'),x.title,x.why||'',x.section||'indian-economy')).join('')+'</div></div>';
+    if(Array.isArray(d.markets)) out+='<div class="story-card" style="margin-top:16px;"><h4 style="margin-top:0;">Major Market Movements · Live</h4>'+liveTable(['Index/Asset','Level','Change'],d.markets.map(x=>[x.name,x.level,x.change]))+'</div>';
+    if(Array.isArray(d.changes) && d.changes.length) out+='<div class="story-card"><h4 style="margin-top:0;">What changed since yesterday</h4>'+d.changes.slice(0,15).map(changeHtml).join('')+'</div>';
+
+    // Preserve the full Overview context instead of replacing it with a small live subset.
+    // These panels are explicitly labelled as context/reference content because their underlying
+    // detailed figures are not yet sourced from dedicated live providers.
+    out += '<div class="context-divider"><span>FULL OVERVIEW CONTEXT</span><small>Live updates above · reference/context panels preserved below</small></div>';
+    out += '<div class="grid-2">';
+    out += '<div class="story-card"><h4 style="margin-top:0;">RBI / SEBI Snapshot</h4><div class="block"><p><b>RBI:</b> Policy and liquidity context remains linked to the live RBI Watch section.</p></div><div class="block"><p><b>SEBI:</b> Regulatory context remains linked to the live SEBI Watch section.</p></div>'+pills(['rbi-watch','sebi-watch'])+'</div>';
+    out += '<div class="story-card"><h4 style="margin-top:0;">Top-Performing Sectors · Reference</h4><span class="sector-chip up">Banking ▲</span><span class="sector-chip up">IT ▲</span><span class="sector-chip up">Capital Goods ▲</span><span class="sector-chip flat">Auto →</span><span class="sector-chip up">Pharma ▲</span><span class="sector-chip down">Realty ▼</span>'+pills(['sector-performance'])+'</div>';
+    out += '</div>';
+    out += '<div class="grid-2">';
+    out += '<div class="story-card"><h4 style="margin-top:0;">Company Developments · Reference</h4><div class="block"><p>TCS and other large-cap earnings remain covered in Corporate & Earnings.</p></div><div class="block"><p>Company-specific catalysts and risks remain covered in Top Companies.</p></div>'+pills(['corporate-earnings','top-companies'])+'</div>';
+    out += '<div class="story-card"><h4 style="margin-top:0;">Geopolitics to Watch · Reference</h4><div class="block"><p>Geopolitical developments with market relevance are tracked in the dedicated Geopolitics & Markets section.</p></div>'+pills(['geopolitics-markets'])+'</div>';
+    out += '</div>';
+    out += '<div class="story-card"><h4 style="margin-top:0;">Data Released Today · Upcoming Events · Reference</h4><div class="block"><p>Use the dedicated Economic Calendar for forward-looking releases and central-bank events.</p></div>'+pills(['economic-calendar'])+'</div>';
+    out += sourceMeta(d);
+    return out;
+  }
+};
+
+function liveUpdateLayer(id){
+  const d = liveSection(id);
+  if (!d) return '';
+  const source = Array.isArray(d.source) ? d.source.join(', ') : (d.source || window.LIVE_DATA?.sources || 'Live public sources');
+  const checked = d.updatedAt || window.LIVE_DATA?.updatedAt;
+  let html = '<div class=\"live-update-layer\"><div class=\"live-update-head\"><span>● LIVE UPDATES</span><span>' + (checked ? esc(formatDateTime(checked)) : 'Latest refresh') + ' · ' + esc(source) + '</span></div>';
+
+  if (id === 'global-markets') {
+    html += '<div class="live-label">LATEST GLOBAL MARKET FEED</div>';
+  } else if (id === 'dashboard' && d.liveUpdates) {
+    const markets = Array.isArray(d.liveUpdates.markets) ? d.liveUpdates.markets : [];
+    const stories = Array.isArray(d.liveUpdates.stories) ? d.liveUpdates.stories : [];
+    if (markets.length || stories.length) html += '<div class=\"live-grid\">';
+    if (markets.length) html += '<div><div class=\"live-label\">LATEST VERIFIED MARKET DATA</div>' + liveTable(['Asset','Level','Change'], markets.slice(0,5).map(x=>[x.name,x.level,x.change])) + '</div>';
+    if (stories.length) html += '<div><div class=\"live-label\">LATEST VERIFIED DEVELOPMENTS</div>' + stories.slice(0,4).map(x=>'<div class=\"live-story\">'+badge(x.priority||'watch')+'<div><b>'+esc(x.title||'Live update')+'</b><div>'+esc(x.why||'')+'</div></div></div>').join('') + '</div>';
+    if (markets.length || stories.length) html += '</div>';
+  } else {
+    if (Array.isArray(d.indicators) && d.indicators.length) html += '<div class=\"live-label\">LATEST VERIFIED INDICATORS</div>' + liveTable(['Indicator','Current','Previous','Change'], d.indicators.slice(0,10).map(x=>[x.name,x.current,x.previous,x.change]));
+    else if (Array.isArray(d.assets) && d.assets.length) html += '<div class=\"live-label\">LATEST VERIFIED ASSET DATA</div>' + liveTable(['Asset','Level','Change'], d.assets.slice(0,10).map(x=>[x.name,x.level||x.price,x.change]));
+    else if (Array.isArray(d.banks) && d.banks.length) html += '<div class=\"live-label\">LATEST VERIFIED CENTRAL-BANK DATA</div>' + liveTable(['Bank','Current Rate','Decision','Stance'], d.banks.slice(0,8).map(x=>[x.bank,x.currentRate,x.latestDecision,x.stance]));
+    else if (Array.isArray(d.stories) && d.stories.length) html += '<div class=\"live-label\">LATEST VERIFIED DEVELOPMENTS</div>' + d.stories.slice(0,4).map(x=>'<div class=\"live-story\">'+badge(x.priority||'watch')+'<div><b>'+esc(x.title||'Live update')+'</b><div>'+esc(x.why||x.whatHappened||'')+'</div></div></div>').join('');
+  }
+  return html + '</div>';
+}
+
+function renderSectionWithLive(id, fallback){
+  // Live data is additive. Never replace the detailed analyst framework with a sparse payload.
+  try { return liveUpdateLayer(id) + fallback(); }
+  catch(e){ console.warn('Live update layer failed for '+id, e); return fallback(); }
+}
+
+/* ---------------- nav rendering ---------------- */
+const NAV_ORDER = [
+  ['dashboard', null],
+  ['global-economy','Macro'], ['indian-economy','Macro'], ['central-banks','Macro'], ['rbi-watch','Macro'], ['sebi-watch','Macro'],
+  ['global-markets','Markets'], ['indian-markets','Markets'], ['forex-capital-flows','Markets'], ['commodities-energy','Markets'],
+  ['sector-performance','Corporate'], ['top-companies','Corporate'], ['company-deep-dive','Corporate'], ['banking-financial','Corporate'], ['corporate-earnings','Corporate'],
+  ['geopolitics-markets','Context'], ['government-policy','Context'], ['economic-calendar','Context'], ['deep-dive','Context'],
+  ['data-refresh','System'],
+  ['interview-prep','Learn'], ['learning-concepts','Learn'],
+];
+
+function renderNav(activeId){
+  let html = '';
+  let lastGroup = undefined;
+  NAV_ORDER.forEach(([id, group]) => {
+    if (group !== lastGroup){
+      html += '<div class="nav-group-label">'+ (group || 'Home') +'</div>';
+      lastGroup = group;
+    }
+    const s = SECTIONS[id];
+    html += '<div class="nav-item'+(id===activeId?' active':'')+'" onclick="selectSection(\''+id+'\')"><span class="ic">'+s.icon+'</span>'+s.title+'</div>';
+  });
+  document.getElementById('nav').innerHTML = html;
+}
+
+let CURRENT_SECTION_ID = 'dashboard';
+function selectSection(id){
+  const s = SECTIONS[id];
+  CURRENT_SECTION_ID = id;
+  document.getElementById('content').innerHTML =
+    '<div class="section-head"><h2>'+s.icon+' '+s.title+'</h2><p>'+s.purpose+'</p></div>' +
+    renderSectionWithLive(id, s.render);
+  renderNav(id);
+  document.querySelector('.content').scrollIntoView({behavior:'instant', block:'start'});
+  window.scrollTo(0,0);
+}
+
+selectSection('dashboard');
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+[
+  {
+    "startedAt": "2026-09-08T13:30:20.004Z",
+    "completedAt": "2026-09-08T13:30:30.577Z",
+    "mode": "scheduled",
+    "status": "completed",
+    "liveSections": [],
+    "warnings": [
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "usRealGDP: FRED_API_KEY not configured",
+      "usCPI: FRED_API_KEY not configured",
+      "usUnemployment: FRED_API_KEY not configured",
+      "usFedFunds: FRED_API_KEY not configured"
+    ],
+    "changes": 12
+  },
+  {
+    "startedAt": "2026-09-08T13:30:13.868Z",
+    "completedAt": "2026-09-08T13:30:24.438Z",
+    "mode": "scheduled",
+    "status": "completed",
+    "liveSections": [],
+    "warnings": [
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "fetch failed",
+      "usRealGDP: FRED_API_KEY not configured",
+      "usCPI: FRED_API_KEY not configured",
+      "usUnemployment: FRED_API_KEY not configured",
+      "usFedFunds: FRED_API_KEY not configured"
+    ],
+    "changes": 12
+  }
+]
